@@ -64,6 +64,9 @@ When looking at these graphs, it's important to remember that any response time 
 
 Quick edit: it was suggested to use "saturation" instead of "jamming", I will agree here.
 
+All graphs here are client-centric. Unfortunately, there are no axis labels (if you know how to show them with flot, I will really appreciate it), but it is always time in milliseconds for Y
+axis and either messages sent by the client or messages received by the client.
+
 sockjs-node
 -----------
 
