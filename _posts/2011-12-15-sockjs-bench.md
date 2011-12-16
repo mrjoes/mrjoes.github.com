@@ -78,10 +78,10 @@ $(function() {
 </script>
 
 On X axis of this graph, we're measuring messages _received_ by the server per second across a range of concurrency levels. Each line is a different 
-concurrency level; low concurrency levels are darker, high concurrency levels are lighter. Y axis is mean round-trip time for messages, in milliseconds.
+concurrency level. Y axis is mean round-trip time for messages, in milliseconds.
 
 For each concurrency levels, server will have to send more messages as a response to one incoming message, which explains why it takes longer to receive
-response for different concurrency levels and same messaging rates.
+response for same messaging rates, but different concurrency levels.
 
 Unfortunately, I can't explain spike around 500 ms for concurrency level of 25. I saw similar artifacts for other concurrency levels tests (including
 socket.io tests), so I assume it has something to do with garbage collection and nodejs.
@@ -102,15 +102,14 @@ $(function() {
 As you can see, sockjs-node starts to "jam" around 45,000 messages.
 
 Another observation: there are additional costs involved to support higher number of connections. Partially it is related to unnecessary json encoding
-when sockjs-node broadcasts the message.
+when sockjs-node server broadcasts the message.
 
 sockjs-tornado on CPython
 -------------------------
 
-One thing to mention before going to python results: python implementation was slightly "cheating" when compared to sockjs-node. SockJS sends json strings over the wire, so json
-encoding and decoding speed affects overall performance. sockjs-tornado provides handy function, which accepts list (enumerable, to be more precise) of clients
-and message to send. This function will do json-encode once and will send encoded message to all clients from the list. It is quite naive optimization,
-but it improved performance by, approximately, 10% for higher concurrency levels.
+One thing to mention before going to python results: python implementation was slightly "cheating" when compared to sockjs-node. SockJS requires that all data
+should be json encoded, so json encoding and decoding speed affects overall performance. sockjs-tornado provides handy [function](https://github.com/MrJoes/sockjs-tornado/blob/master/sockjs/tornado/conn.py#L62), which reduces number of json encodes when broadcasting the message. Quite naive optimization,
+but it improved performance by ~10% for high concurrency levels.
 
 Also, sockjs-tornado uses optimized version of the _tornado.websocket_ protocol handler. Minor changes, but it gave approximately 10% performance boost. _simplejson_ was used as a json encoding 
 library. I will try it with _ujson_ later, as current stable ujson was failing sockjs-protocol tests.
@@ -231,7 +230,7 @@ $(function() {
 });
 </script>
 
-socket.io and sockjs-node are very close in their performance. CPython is slightly faster and is able to handle increase load more efficiently than node.js servers. PyPy is a clear winner.
+socket.io and sockjs-node are very close in their performance. CPython is slightly faster and is able to handle increased load more efficiently than node.js servers. PyPy is a clear winner.
 
 Memory usage
 ------------
@@ -262,6 +261,10 @@ If you want to squeeze every bit of performance you can get at cost of some extr
 use with PyPy, you should really try PyPy. It is very compatible, production ready and extremely fast.
 
 Unfortunately, I didn't have chance to test other SockJS server implementations (erlang, ruby, vert.x, lua), but you might want to benchmark them as well.
+
+Please keep in mind, this benchmark is purely theoretical, because it is highly unlikely that all your clients will use websocket protocol. SockJS
+supports streaming transports (one streaming connection for incoming data, short living AJAX requests for outgoing data), so at least you expect that 
+your server won't be hit as often as socket.io server.
 
 Thanks
 ------
