@@ -47,6 +47,7 @@ Hardware and software information
 Linux Meerkat 2.6.32-5-amd64 #1 SMP Thu Nov 3 03:41:26 UTC 2011 x86_64 GNU/Linux
 
 CPU model: Intel(R) Core(TM) i7-2600K CPU @ 3.40GHz
+
 Memory: 16 GB
 
 Server and client were running on the same machine. Client was forced to use 3 cores (out of 4), server was forced to use one core. Client never went above 170% CPU usage,
@@ -60,8 +61,6 @@ I will quote paragraph from socket.io benchmarking article:
 <blockquote>
 When looking at these graphs, it's important to remember that any response time greater than 200 ms represents a basically fatal situation; if response times start to rise, it means the task queue on the server has started to receive tasks faster than it can process them. When we hit this state, which I'm calling "jamming", (there may well be some already agreed upon way to describe this state, but I haven't seen it), the server will fall further and further behind and won't be able to recover unless load drops below the jamming threshold and stays below it long enough to clear the backlog. So what we're really interested in here is at what load levels (concurrency level / messaging rate) we start to see slowdown. That will give us a sense of what a maximum safe load level might be. We don't really want to be above that level if we can avoid it, even for short periods of time, because the responsiveness of our application drops substantially.
 </blockquote>
-
-All graphs are client-centric. If axis says "messages recv per second", it means "total messages received by client during one second".
 
 sockjs-node
 -----------
