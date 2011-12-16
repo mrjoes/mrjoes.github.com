@@ -86,6 +86,29 @@ function plotGraph(name, container_id, choices_id, raw_data, legend_pos)
 	// Handle mouse hover
 	var updateLegendTimeout = null;
 	var latestPosition = null;
+	var latestValue = null;
+	var tip = null;
+
+	container.mousemove(function(e) {
+		if (latestPosition != null && latestPosition.x > 0)
+		{
+			if (tip == null)
+			{
+				tip = $('<div/>')
+						.attr('class', 'tooltip')
+						.appendTo($('body'));
+			}
+
+			tip.css('left', e.pageX + 'px')
+			   .css('top', e.pageY + 24 + 'px')
+			   .text(latestPosition.x.toFixed(2));
+		}
+	}).mouseout(function() {
+		if (tip != null) {
+			tip.remove();
+			tip = null;			
+		}
+	});
 
 	function updateLegend() {
 		updateLegendTimeout = null;

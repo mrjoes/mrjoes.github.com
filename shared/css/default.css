@@ -87,3 +87,19 @@ footer {
 	height: 450px;
 	position: relative;
 }
+
+.tooltip
+{
+	background: #cfcfcf;
+	border-radius: 5px;
+	border: 1px solid black;
+	padding: 3px;
+	position: absolute;
+}
+
+#comments
+{
+	width: 960px;
+	margin: 0 auto;
+	background: rgba(255, 255, 255, 0.4);
+}
