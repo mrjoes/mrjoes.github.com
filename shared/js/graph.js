@@ -19,8 +19,6 @@ function plotGraph(name, container_id, choices_id, raw_data, legend_pos)
 			label: label + ' = 0.00',
 			color: i
 		};
-
-		console.log(n[1]);
 		
 		data[label] = line;
 		i += 1;
