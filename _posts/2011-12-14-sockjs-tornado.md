@@ -17,10 +17,10 @@ If you worked with [socket.io](http://socket.io/) before, you might think that i
 * SockJS is designed with scalability in mind. I don't want to go into details here, but it is very easy to load balance
   connections by just using data stored in the URL.
 * SockJS follows HTML5 Websockets API as closely as possible. So, switching to native implementation should be painless. On other
-  hand, current stable socket.io version exposes higher level API, which is not compatible with Websocket spec. This also means,
-  that SockJS sends strings, while socket.io is smart enough to send json data, etc.
+  hand, current stable socket.io version exposes higher level (richer) API, which is not compatible with Websocket spec. 
 * SockJS implements at least one streaming protocol for every major browser. Since version 0.7, socket.io does not support any
-  streaming transports - only websockets (or flashsockets fallback) and various polling transports.
+  streaming transports - only websockets (or flashsockets fallback) and various polling transports. One can argue that streaming
+  protocols are not worth the trouble, but they really reduce latency and server load, if client is able to use them.
 * SockJS has very simple protocol and very good documentation. Also, there is excellent 
   [test suite](https://github.com/sockjs/sockjs-protocol) for backend developers, so they verify their SockJS server 
   implementation. So, SockJS enforces certain behavioral patterns and expects all server implementations confirm to the protocol
@@ -52,10 +52,5 @@ if __name__ == '__main__':
     app.listen(9999)
     ioloop.IOLoop.instance().start()
 {% endhighlight %}
-
-What's pending?
----------------
-
-Right now, I'm finishing qunit benchmarks and updating documentation. Should be done very soon.
 
 Anyway, hope you'll like it.
