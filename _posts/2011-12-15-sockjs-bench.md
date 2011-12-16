@@ -166,9 +166,9 @@ $(function() {
 });
 </script>
 
-Even with concurrency of 25 clients, PyPy was able to handle around 7,500 messages per second with reasonable (less than 200 ms) mean round-trip time.
+For concurrency of 25 clients, PyPy was able to handle around 7,500 incoming messages per second with reasonable (less than 200 ms) mean round-trip time. Anyway, it looks very promising.
 
-Number of messages _received_.
+Lets move to another graph - number of messages _received_ by the client, per second:
 
 <div id="pypy_r" class="graph"> </div>
 <div id="pypy_rlegend" class="graph_legend"> </div>
