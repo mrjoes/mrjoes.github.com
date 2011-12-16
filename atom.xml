@@ -24,7 +24,7 @@ layout: nil
       <name>Serge S. Koval</name>
       <uri>http://mrjoes.github.com/</uri>
     </author>
-    <content type="html">{{ post.content | xml_escape }}</content>
+    <content type="html">{{ post.abstract | xml_escape }}</content>
   </entry>
   {% endfor %}
  
