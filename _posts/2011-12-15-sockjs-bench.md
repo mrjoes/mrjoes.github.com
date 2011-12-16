@@ -34,10 +34,10 @@ per second across all clients and measures time that elapses between when the me
 of this message. If it takes longer than 5 seconds to receive a message, server drops connection or mean response time is greater than 1.5
 seconds, server considered overloaded and test will continue with next concurrency level.
 
-Client is written in Java and can be found [here](http://github.com/mrjoes/sock-benchmark/). At first, I attempted to write one in [Go](http://golang.org/), 
+Client is written in Java and can be found [here](http://github.com/mrjoes/sock-benchmark/). At first, I attempted to write one in [Go](http://golang.org/),
 but it was not able to keep up with single instance of the sockjs-tornado running on PyPy. Luckily enough, Java version was able to.
 
-Test was executed at a range of concurrency levels (25-2,000) at different messaging rates till server was considered overloaded. At each concurrency 
+Test was executed at a range of concurrency levels (25-2,000) at different messaging rates till server was considered overloaded. At each concurrency
 level / messaging rate setting, the client collects various statistics (mean roundtrip time, standard deviation, etc). This data is then used to
 plot graphs found in this post.
 
@@ -76,7 +76,7 @@ $(function() {
 });
 </script>
 
-On X axis of this graph, we're measuring messages _received_ by the server per second across a range of concurrency levels. Each line is a different 
+On X axis of this graph, we're measuring messages _received_ by the server per second across a range of concurrency levels. Each line is a different
 concurrency level. Y axis is mean round-trip time for messages, in milliseconds.
 
 For each concurrency levels, server will have to send more messages as a response to one incoming message, which explains why it takes longer to receive
@@ -110,7 +110,7 @@ One thing to mention before going to python results: python implementation was s
 should be json encoded, so json encoding and decoding speed affects overall performance. sockjs-tornado provides handy [function](https://github.com/MrJoes/sockjs-tornado/blob/master/sockjs/tornado/conn.py#L62), which reduces number of json encodes when broadcasting the message. Quite naive optimization,
 but it improved performance by ~10% for high concurrency levels.
 
-Also, sockjs-tornado uses optimized version of the _tornado.websocket_ protocol handler. Minor changes, but it gave approximately 10% performance boost. _simplejson_ was used as a json encoding 
+Also, sockjs-tornado uses optimized version of the _tornado.websocket_ protocol handler. Minor changes, but it gave approximately 10% performance boost. _simplejson_ was used as a json encoding
 library. I will try it with _ujson_ later, as current stable ujson was failing sockjs-protocol tests.
 
 This graph shows number of messages _sent_ by the client:
@@ -193,7 +193,7 @@ Messages sent:
 <script>
 $(function() {
 	$.getJSON('/shared/posts/sockjs-bench/socketio_sent.json', function(data) {
-		plotGraph('socketios', '#socketio_s', '#socketio_slegend', data, "nw");
+		plotGraph('socketios', '#socketio_s', '#socketio_slegend', data, "ne");
 	});
 });
 </script>
@@ -249,12 +249,12 @@ Just to mention, test client ate around 2.5 GB of memory (6.9 GB virtual) at hig
 Conclusions
 -----------
 
-I was quite surprised by the results. I thought node.js and PyPy will share first place, while CPython will be left behind. Also, I did not expect PyPy to 
+I was quite surprised by the results. I thought node.js and PyPy will share first place, while CPython will be left behind. Also, I did not expect PyPy to
 perform _that_ well in this benchmark.
 
 socks-node has reasonable performance of ~45,000 pushed messages per second for all tested concurrency levels. If your application is built on top
-of node.js software stack, there's no point to switch to different server implementation. Keep in mind that SockJS was developed with scalability in mind, 
-so you can throw more sockjs-node instances and load balance them. While socket.io test was done for fun, sockjs-node is in same league as socket.io, 
+of node.js software stack, there's no point to switch to different server implementation. Keep in mind that SockJS was developed with scalability in mind,
+so you can throw more sockjs-node instances and load balance them. While socket.io test was done for fun, sockjs-node is in same league as socket.io,
 so that's good too.
 
 On other hand, if your application is written in Python (Django anyone?), there is no point to investigate node.js option even with CPython interpreter.
@@ -264,10 +264,10 @@ use with PyPy, you should really try PyPy. It is very compatible, production rea
 Unfortunately, I didn't have chance to test other SockJS server implementations (erlang, ruby, vert.x, lua), but you might want to benchmark them as well.
 
 Please keep in mind, this benchmark is purely theoretical, because it is highly unlikely that all your clients will use websocket protocol. SockJS
-supports streaming transports (one streaming connection for incoming data, short living AJAX requests for outgoing data), so at least you expect that 
+supports streaming transports (one streaming connection for incoming data, short living AJAX requests for outgoing data), so at least you expect that
 your server won't be hit as often as socket.io server.
 
 Thanks
 ------
 
-I'm really grateful to [Drew Harry](http://web.media.mit.edu/~dharry/), who saved lot of my time by doing his socket.io test. 
+I'm really grateful to [Drew Harry](http://web.media.mit.edu/~dharry/), who saved lot of my time by doing his socket.io test.
