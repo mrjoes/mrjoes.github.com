@@ -92,6 +92,11 @@ footer {
 	position: relative;
 }
 
+.graph_legend
+{
+	text-align: center;
+}
+
 .tooltip
 {
 	background: #cfcfcf;
