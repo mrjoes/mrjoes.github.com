@@ -34,7 +34,7 @@ per second across all clients and measures time that elapses between when the me
 of this message. If it takes longer than 5 seconds to receive a message, server drops connection or mean response time is greater than 1.5
 seconds, server considered overloaded and test will continue with next concurrency level.
 
-Client is written in Java and can be found [here](http://github.com/mrjoes/sock-benchmark/). At first, I attempted to write one in [Go](http://golang.org/),
+Client is written in Java and can be found [here](http://github.com/mrjoes/sock-benchmarking/). At first, I attempted to write one in [Go](http://golang.org/),
 but it was not able to keep up with single instance of the sockjs-tornado running on PyPy. Luckily enough, Java version was able to.
 
 Test was executed at a range of concurrency levels (25-2,000) at different messaging rates till server was considered overloaded. At each concurrency
