@@ -200,7 +200,7 @@ $(function() {
 
 Graph looks similar to sockjs-node one, but a little bit more spiky.
 
-Received:
+Messages received:
 
 <div id="socketio_r" class="graph"> </div>
 <div id="socketio_rlegend" class="graph_legend"> </div>
@@ -228,6 +228,8 @@ $(function() {
 	});
 });
 </script>
+
+X axis is number of messages _received_.
 
 socket.io and sockjs-node are very close in their performance. CPython is slightly faster and is able to handle increased load more efficiently than node.js servers. PyPy is a clear winner.
 
