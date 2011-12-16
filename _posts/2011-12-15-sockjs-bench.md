@@ -27,8 +27,7 @@ Testing Framework
 -----------------
 
 Server is a simple broadcast application: whenever client sends a message, it will be echoed to all connected clients. Python server code can be found
-[here](https://github.com/MrJoes/sockjs-tornado/blob/master/examples/bench/bench.py). sockjs-node server code is just an "broadcast" example with disabled
-logging, found in sockjs-node repository.
+[here](https://github.com/MrJoes/sockjs-tornado/blob/master/examples/bench/bench.py). sockjs-node server code is "broadcast" example found in sockjs-node repository with logging disabled.
 
 Client is a little more complicated. It makes a set number of connections to the server (concurrency level), sends a certain number of messages
 per second across all clients and measures time that elapses between when the message is sent and when it receives the server-broadcasted version
