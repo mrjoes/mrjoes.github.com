@@ -106,11 +106,10 @@ when sockjs-node server broadcasts the message.
 sockjs-tornado on CPython
 -------------------------
 
-One thing to mention before going to python results: python implementation was slightly "cheating" when compared to sockjs-node. SockJS requires that all data
-should be json encoded, so json encoding and decoding speed affects overall performance. sockjs-tornado provides handy [function](https://github.com/MrJoes/sockjs-tornado/blob/master/sockjs/tornado/conn.py#L62), which reduces number of json encodes when broadcasting the message. Quite naive optimization,
+One thing to mention before going to python results: python implementation was slightly "cheating" when compared to sockjs-node. SockJS requires that all transfers are done using json-encoded messages, so json encoding and decoding speed will affect performance. sockjs-tornado provides handy [function](https://github.com/MrJoes/sockjs-tornado/blob/master/sockjs/tornado/conn.py#L62), which reduces number of json encodes when broadcasting the message. Quite naive optimization,
 but it improved performance by ~10% for high concurrency levels.
 
-Also, sockjs-tornado uses optimized version of the _tornado.websocket_ protocol handler. Minor changes, but it gave approximately 10% performance boost. _simplejson_ was used as a json encoding
+Also, sockjs-tornado uses optimized version of the _tornado.websocket_ protocol handler. Some minor changes, but it gave approximately 10% performance boost. _simplejson_ was used as a json encoding
 library. I will try it with _ujson_ later, as current stable ujson was failing sockjs-protocol tests.
 
 This graph shows number of messages _sent_ by the client:
