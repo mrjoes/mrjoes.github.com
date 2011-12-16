@@ -184,7 +184,7 @@ Costs to keep more connections running is smaller for PyPy as well. At 100,000 m
 And for fun - Socket.IO
 -----------------------
 
-This is test of the node.js socket.io 0.8.7 server software. I just took existing application from [here](https://github.com/drewww/socket.io-benchmarking/).
+This is test of the node.js socket.io 0.8.7 server software. I just took existing server application from [here](https://github.com/drewww/socket.io-benchmarking/).
 
 Messages sent:
 
