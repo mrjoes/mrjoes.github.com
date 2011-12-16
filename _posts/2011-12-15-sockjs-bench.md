@@ -261,9 +261,12 @@ of node.js software stack, there's no point to switch to different server implem
 so you can throw more sockjs-node instances and load balance them. While socket.io test was done for fun, sockjs-node is in same league as socket.io,
 so that's good too.
 
-On other hand, if your application is written in Python (Django anyone?), there is no point to investigate node.js option even with CPython interpreter.
-If you want to squeeze every bit of performance you can get at cost of some extra memory used and you don't have any incompatible libraries that you can't
-use with PyPy, you should really try PyPy. It is very compatible, production ready and extremely fast.
+On other hand, if your application is written in Python (Django anyone?), and you want to add some realtime features, there is no point to investigate node.js
+option even with CPython interpreter. Even though you will have to use to Tornado framework for realtime component, it is still python and lots of code
+can be reused.
+
+As for the PyPy - if you want to squeeze every bit of performance you can get at cost of some extra memory used and you don't have any incompatible libraries
+that you can't use with PyPy, you should really try it. PyPy is very compatible, production ready and extremely fast.
 
 Unfortunately, I didn't have chance to test other SockJS server implementations (erlang, ruby, vert.x, lua), but you might want to benchmark them as well.
 
