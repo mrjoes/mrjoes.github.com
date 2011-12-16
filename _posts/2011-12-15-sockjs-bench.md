@@ -62,6 +62,8 @@ I will quote paragraph from socket.io benchmarking article:
 When looking at these graphs, it's important to remember that any response time greater than 200 ms represents a basically fatal situation; if response times start to rise, it means the task queue on the server has started to receive tasks faster than it can process them. When we hit this state, which I'm calling "jamming", (there may well be some already agreed upon way to describe this state, but I haven't seen it), the server will fall further and further behind and won't be able to recover unless load drops below the jamming threshold and stays below it long enough to clear the backlog. So what we're really interested in here is at what load levels (concurrency level / messaging rate) we start to see slowdown. That will give us a sense of what a maximum safe load level might be. We don't really want to be above that level if we can avoid it, even for short periods of time, because the responsiveness of our application drops substantially.
 </blockquote>
 
+Quick edit: it was suggested to use "saturation" instead of "jamming", I will agree here.
+
 sockjs-node
 -----------
 
@@ -98,7 +100,7 @@ $(function() {
 });
 </script>
 
-As you can see, sockjs-node starts to "jam" around 45,000 messages.
+As you can see, sockjs-node starts to slow down around 45,000 messages.
 
 Another observation: there are additional costs involved to support higher number of connections. Partially it is related to unnecessary json encoding
 when sockjs-node server broadcasts the message.
@@ -109,7 +111,7 @@ sockjs-tornado on CPython
 One thing to mention before going to python results: python implementation was slightly "cheating" when compared to sockjs-node. SockJS requires that all transfers are done using json-encoded messages, so json encoding and decoding speed will affect performance. sockjs-tornado provides handy [function](https://github.com/MrJoes/sockjs-tornado/blob/master/sockjs/tornado/conn.py#L62), which reduces number of json encodes when broadcasting the message. Quite naive optimization,
 but it improved performance by ~10% for high concurrency levels.
 
-Also, sockjs-tornado uses optimized version of the _tornado.websocket_ protocol handler. Some minor changes, but it gave approximately 10% performance boost. _simplejson_ was used as a json encoding
+Also, sockjs-tornado uses optimized version of the _tornado.websocket_ protocol handler. Some minor changes, but they gave approximately 10% performance boost. _simplejson_ was used as a json encoding
 library. I will try it with _ujson_ later, as current stable ujson was failing sockjs-protocol tests.
 
 This graph shows number of messages _sent_ by the client:
@@ -140,7 +142,7 @@ $(function() {
 });
 </script>
 
-CPython starts jamming around 55,000 messages per second. Cost of handling more connections is lower than for sockjs-node (28 ms vs 32 ms at 20,000 mps).
+CPython starts to slow down around 55,000 messages per second. Cost of handling more connections is lower than for sockjs-node (28 ms vs 32 ms at 20,000 mps).
 
 
 sockjs-tornado on PyPy
