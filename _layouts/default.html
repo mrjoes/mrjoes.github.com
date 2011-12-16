@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta chatset="utf-8" />
+	<title>{% if page.title %}{{ page.title }} | {% endif %} Eat at Joe's</title>
+	<link rel="stylesheet" href="/shared/css/default.css" />
+	<link rel="stylesheet" href="/shared/css/pygments.css" />
+</head>
+<body>
+	<div id="main">
+		<header>
+			<h1>Eat at Joe's</h1>
+		</header>
+
+		<nav role="navigation">
+			<ul>
+				<li><a href="/">Home</a></li>
+				{% if site.posts|length > 5 %}<li><a href="/archive.html">Archive</a></li>{% endif %}
+				<li><a href="/about.html">About</a></li>
+			</ul>
+		</nav>
+		<section class="content">		
+			{{ content }}
+		</section>
+	</div>
+</body>
+</html>
