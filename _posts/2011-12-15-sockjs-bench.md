@@ -20,8 +20,8 @@ won't test any streaming or polling transports.
 
 If you want to bypass full analysis, here is quick summary. On a Core i7-2600K @ 3.4 GHz, using single core, running amd64 linux, I got following results:
 * sockjs-node on node 0.6.5 is able to maintain rate of ~45,000 outgoing messages per second
-* sockjs-python on CPython 2.6.6 is around of ~55,000 messages per second
-* sockjs-python on PyPy 1.7 is in range of 155,000-195,000 messages per second, depending on concurrency level.
+* sockjs-tornado on CPython 2.6.6 is around of ~55,000 messages per second
+* sockjs-tornado on PyPy 1.7 is in range of 155,000-195,000 messages per second, depending on concurrency level.
 
 You can quickly [jump](#comparison) to the comparison graph.
 
