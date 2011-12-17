@@ -181,7 +181,7 @@ $(function() {
 });
 </script>
 
-Woohoo, PyPy was able to keep mean response time under 200ms for 150,000 messages. For concurrency level of 200, it was able to pump 195,000 messages in the same time frame.
+Woohoo, PyPy was able to keep mean response time under 200ms for rate of 150,000 outgoing messages per second. For concurrency level of 200, it was able to pump 195,000 messages in the same time frame.
 Costs to keep more connections running is smaller for PyPy as well. At 100,000 messages per second, it took 10ms to get response at highest (2,000) concurrency level.
 
 And for fun - Socket.IO
@@ -233,7 +233,7 @@ $(function() {
 });
 </script>
 
-X axis is number of messages _received_.
+X axis is number of messages _received_ by client per second. Y is mean round-trip time in milliseconds.
 
 socket.io and sockjs-node are very close in their performance. CPython is slightly faster and is able to handle increased load more efficiently than node.js servers. PyPy is a clear winner.
 
