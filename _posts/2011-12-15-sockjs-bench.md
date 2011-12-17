@@ -23,6 +23,8 @@ If you want to bypass full analysis, here is quick summary. On a Core i7-2600K @
 * sockjs-python on CPython 2.6.6 is around of ~55,000 messages per second
 * sockjs-python on PyPy 1.7 is in range of 155,000-195,000 messages per second, depending on concurrency level.
 
+You can quickly [jump](#comparison) to the comparison graph.
+
 Testing Framework
 -----------------
 
@@ -90,7 +92,7 @@ response for same messaging rates, but different concurrency levels.
 Unfortunately, I can't explain spike around 500 ms for concurrency level of 25. I saw similar artifacts for other concurrency levels tests (including
 socket.io tests), so I assume it has something to do with garbage collection and nodejs.
 
-Now, lets change X axis to be messages _sent_ by the server:
+Now, lets change X axis to be messages _sent_ by the server per second:
 
 <div id="node_r" class="graph"> </div>
 <div id="node_rlegend" class="graph_legend"> </div>
@@ -117,7 +119,7 @@ but it improved performance by ~10% for high concurrency levels.
 Also, sockjs-tornado uses optimized version of the _tornado.websocket_ protocol handler. Some minor changes, but they gave approximately 10% performance boost. _simplejson_ was used as a json encoding
 library. I will try it with _ujson_ later, as current stable ujson was failing sockjs-protocol tests.
 
-This graph shows number of messages _sent_ by the client:
+This graph shows number of messages _sent_ by the client per second:
 
 <div id="cpython_s" class="graph"> </div>
 <div id="cpython_slegend" class="graph_legend"> </div>
@@ -132,7 +134,7 @@ $(function() {
 
 Looks very similar to the sockjs-node results, but with random spikes here and there.
 
-Number of messages _received_:
+Number of messages _received_ by the client per second:
 
 <div id="cpython_r" class="graph"> </div>
 <div id="cpython_rlegend" class="graph_legend"> </div>
@@ -189,7 +191,7 @@ And for fun - Socket.IO
 
 This is test of the node.js socket.io 0.8.7 server software. I just took existing server application from [here](https://github.com/drewww/socket.io-benchmarking/).
 
-Messages sent:
+Messages sent by the client, per second:
 
 <div id="socketio_s" class="graph"> </div>
 <div id="socketio_slegend" class="graph_legend"> </div>
@@ -204,7 +206,7 @@ $(function() {
 
 Graph looks similar to sockjs-node one, but a little bit more spiky.
 
-Messages received:
+Messages received by client, per second:
 
 <div id="socketio_r" class="graph"> </div>
 <div id="socketio_rlegend" class="graph_legend"> </div>
@@ -222,6 +224,8 @@ Looks similar to sockjs-node, but with more jitter.
 Quick Comparative Analysis
 --------------------------
 
+<a name="comparison"></a>
+
 <div id="summary" class="graph"> </div>
 <div id="summary_legend" class="graph_legend"> </div>
 
@@ -233,7 +237,8 @@ $(function() {
 });
 </script>
 
-X axis is number of messages _received_ by client per second. Y is mean round-trip time in milliseconds.
+X axis is number of messages _received_ by client per second. Y is mean round-trip time in milliseconds. "node" is sockjs-node, "socketio" is socket.io 0.8.7 node server, cpython is sockjs-tornado
+running on cpython 2.6.6 and pypy is sockjs-tornado running on PyPy 1.7. Number next to the label is concurrency level.
 
 socket.io and sockjs-node are very close in their performance. CPython is slightly faster and is able to handle increased load more efficiently than node.js servers. PyPy is a clear winner.
 
