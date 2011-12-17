@@ -111,7 +111,7 @@ when sockjs-node server broadcasts the message.
 sockjs-tornado on CPython
 -------------------------
 
-One thing to mention before going to python results: python implementation was slightly "cheating" when compared to sockjs-node. SockJS requires all data to be json-encoded, so json encoding/decoding speed will have affect server performance. sockjs-tornado provides handy [function](https://github.com/MrJoes/sockjs-tornado/blob/master/sockjs/tornado/conn.py#L62), which reduces number of json encodes when broadcasting the message. Quite naive optimization,
+One thing to mention before going to python results: python implementation was slightly "cheating" when compared to sockjs-node. SockJS requires all data to be json-encoded, so json encoding/decoding speed will affect server performance. sockjs-tornado provides handy [function](https://github.com/MrJoes/sockjs-tornado/blob/master/sockjs/tornado/conn.py#L62), which reduces number of json encodes when broadcasting the message. Quite naive optimization,
 but it improved performance by ~10% for high concurrency levels.
 
 Also, sockjs-tornado uses optimized version of the _tornado.websocket_ protocol handler. Some minor changes, but they gave approximately 10% performance boost. _simplejson_ was used as a json encoding
