@@ -224,7 +224,7 @@ Looks similar to sockjs-node, but with more jitter.
 Quick Comparative Analysis
 --------------------------
 
-<a name="comparison"></a>
+<a name="comparison"> </a>
 
 <div id="summary" class="graph"> </div>
 <div id="summary_legend" class="graph_legend"> </div>
