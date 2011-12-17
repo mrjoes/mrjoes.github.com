@@ -84,7 +84,7 @@ $(function() {
 On X axis of this graph, we're measuring messages _received_ by the server per second across a range of concurrency levels. Each line is a different
 concurrency level. Y axis is mean round-trip time for messages, in milliseconds.
 
-For each concurrency levels, server will have to send more messages as a response to one incoming message, which explains why it takes longer to receive
+For each concurrency level, server will have to send more messages as a response to one incoming message, which explains why it takes longer to receive
 response for same messaging rates, but different concurrency levels.
 
 Unfortunately, I can't explain spike around 500 ms for concurrency level of 25. I saw similar artifacts for other concurrency levels tests (including
@@ -111,7 +111,7 @@ when sockjs-node server broadcasts the message.
 sockjs-tornado on CPython
 -------------------------
 
-One thing to mention before going to python results: python implementation was slightly "cheating" when compared to sockjs-node. SockJS requires that all transfers are done using json-encoded messages, so json encoding and decoding speed will affect performance. sockjs-tornado provides handy [function](https://github.com/MrJoes/sockjs-tornado/blob/master/sockjs/tornado/conn.py#L62), which reduces number of json encodes when broadcasting the message. Quite naive optimization,
+One thing to mention before going to python results: python implementation was slightly "cheating" when compared to sockjs-node. SockJS requires all data to be json-encoded, so json encoding/decoding speed will have affect server performance. sockjs-tornado provides handy [function](https://github.com/MrJoes/sockjs-tornado/blob/master/sockjs/tornado/conn.py#L62), which reduces number of json encodes when broadcasting the message. Quite naive optimization,
 but it improved performance by ~10% for high concurrency levels.
 
 Also, sockjs-tornado uses optimized version of the _tornado.websocket_ protocol handler. Some minor changes, but they gave approximately 10% performance boost. _simplejson_ was used as a json encoding
