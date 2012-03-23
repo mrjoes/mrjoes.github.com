@@ -29,6 +29,12 @@ if __name__ == '__main__':
     admin.add_view(sqlamodel.ModelView(User, db.session))
     admin.add_view(sqlamodel.ModelView(Post, db.session))
     app.run()
-{% endhlighlight %}
+{% endhighlight %}
 
-For more information, check [documentation](http://flask-adminex.readthedocs.org/) or browse [GitHub](https://github.com/MrJoes/Flask-AdminEx)
+which will look like this:
+
+<a href="http://flask-adminex.readthedocs.org/en/latest/_images/quickstart_4.png">
+  <img src="http://flask-adminex.readthedocs.org/en/latest/_images/quickstart_4.png" width="640" alt="Screenshot"></img>
+</a>
+
+For more information, check [documentation](http://flask-adminex.readthedocs.org/) or browse [GitHub](https://github.com/MrJoes/Flask-AdminEx/)
