@@ -31,7 +31,7 @@ if __name__ == '__main__':
     app.run()
 {% endhighlight %}
 
-which will look like this:
+Which will look like this:
 
 <a href="http://flask-adminex.readthedocs.org/en/latest/_images/quickstart_4.png">
   <img src="http://flask-adminex.readthedocs.org/en/latest/_images/quickstart_4.png" width="640" alt="Screenshot"></img>
