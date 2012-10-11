@@ -36,7 +36,7 @@ Ejabberd integration
 --------------------
 
 Unfortunately, there's no ready-to-use websocket module for Ejabberd. There's pretty old fork, which you can find [here](https://github.com/superfeedr/ejabberd-websockets).
-Unfortunately, it is quite hackish (parsing XML with regexps, creating new process for each incoming stanza, etc) and does not support latest websocket spec.
+It is quite hackish (parsing XML with regexps, creating new process for each incoming stanza, etc) and does not support latest websocket spec.
 
 There's supposedly websocket module developed by ProcessOne, but it is not released, so I can't say anything about it.
 
