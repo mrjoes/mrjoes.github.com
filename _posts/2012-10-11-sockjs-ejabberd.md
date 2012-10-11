@@ -18,7 +18,7 @@ Why SockJS?
 Actually, it is better to rephrase the question: why websockets? Because of latency and cost to maintain active connection. It is much more efficient
 to use persistent TCP connection than bunch of short-lived HTTP requests.
 
-Why SockJS instead of raw websockets and BOSH as fallback? Two reasons:
+Why SockJS instead of raw websockets and BOSH as fallback? Three reasons:
 
 1. SockJS provides websocket-like API, so switching to websocket on client side is to use SockJS class instead of Websocket class;
 2. No need to hack Strophe to support both BOSH and websocket at the same time - SockJS already provides fallback transports;
