@@ -51,7 +51,7 @@ Strophe.js integration
 ----------------------
 
 I used this [gist](https://gist.github.com/739147) as basis for the Strophe.js integration. Essentially, it is same Strophe.Connection class as
-this in gist, but I used slightly newer Strophe.js version and used SockJS class instead of Websocket class.
+in this gist, but I used slightly newer Strophe.js version and used SockJS class instead of Websocket class.
 
 Latency tests
 -------------
