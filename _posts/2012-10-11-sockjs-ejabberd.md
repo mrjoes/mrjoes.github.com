@@ -148,8 +148,8 @@ table, th, td {
 Quick analysis
 --------------
 
-1. Looks like Ejabberd BOSH implementation agressively buffers outgoing messages to send them in one response. SockJS also does this for polling transports, but doesn't have any internal delays - if there's data in queue, if will be dumped immediately.
-2. For remote Ejabberd instance with pretty high network latency results are still in favor of SockJS, even though SockJS did 223 requests for polling
+1. Looks like Ejabberd BOSH implementation agressively buffers outgoing messages to send them in one response. SockJS also does this for polling transports, but doesn't have any internal delays - if there's data in queue, if will be dumped immediately;
+2. For remote Ejabberd instance with pretty high network latency, results are still in favor of SockJS, even though SockJS did 223 requests for polling
 transport and BOSH did only 118;
 3. SockJS streaming transport worked very good in this test, very close to websocket performance against remote server;
 4. JSONP-polling transport worked as a decent alternative for BOSH;
