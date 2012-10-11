@@ -20,11 +20,11 @@ to use persistent TCP connection than bunch of short-lived HTTP requests.
 
 Why SockJS instead of raw websockets and BOSH as fallback? Three reasons:
 
-1. SockJS provides websocket-like API, so switching to websocket on client side is to use SockJS class instead of Websocket class;
+1. SockJS provides websocket-like API, so using SockJS on the client is as simple as creating instance of SockJS class instead of Websocket class;
 2. No need to hack Strophe to support both BOSH and websocket at the same time - SockJS already provides fallback transports;
 3. There are ready-to-use server-side websocket libraries for Erlang (like [Cowboy](https://github.com/extend/cowboy)). Instead of writing yet
    another websocket protocol implementation using Ejabberd HTTP framework, I thought it should be easier to run Cowboy in a separate
-   Erlang process and use its websocket module. With this in mind, why not use [sockjs-erlang](https://github.com/sockjs/sockjs-erlang) right away,
+   Erlang process and use its websocket module. With this in mind, why not use [sockjs-erlang](https://github.com/sockjs/sockjs-erlang),
    as it already runs on top of Cowboy?
 
 Protocol
