@@ -61,12 +61,12 @@ with SockJS polling transports, it seemed like latency is lower than BOSH!
 
 So, I created small HTML page, which does following:
 
-1. Get current time stamp
-2. Connect to jabber server and authenticate
-3. Send ping
-4. Wait for pong
-5. Repeat step #3 one hundred times
-6. Calculate time delta
+1. Gets current time stamp
+2. Connects to jabber server and authenticates
+3. Sends ping
+4. Waits for pong
+5. Repeats step #3 one hundred times
+6. Calculates time delta
 
 Basically, it won't send next ping before receiving pong. Higher latency - longer it'll take to complete.
 
