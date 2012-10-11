@@ -75,9 +75,9 @@ Test results
 
 Legend:
 
-* Transport is SockJS transport name or BOSH if it is BOSH
-* Localhost N - tests against Ejabberd running on localhost
-* Remote N - tests against US server (average ping at time of testing: 162ms)
+* Transport is SockJS transport name or BOSH if it is BOSH;
+* Localhost N - tests against Ejabberd running on localhost, in milliseconds;
+* Remote N - tests against US server (average ping at time of testing: 162ms), in milliseconds.
 
 
 Results:
