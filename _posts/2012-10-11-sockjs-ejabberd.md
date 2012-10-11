@@ -161,6 +161,6 @@ Conclusion
 ----------
 
 I'm pretty happy with the switch. Not sure how sockjs-erlang will handle increased load or what's memory footprint is like, but I'm already
-seeing much better application responsiveness than with BOSH.
+seeing much better application responsiveness with SockJS.
 
 We'll see how it goes.
