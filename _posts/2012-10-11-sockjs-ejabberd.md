@@ -31,7 +31,9 @@ Protocol
 --------
 
 Instead of using custom handshake (like in BOSH), client sends and receives "normal" XMPP stream header. So, SockJS is used as TCP replacement
-with exactly same protocol.
+with exactly same protocol. It is sort of compatible with xmpp-over-websocket draft, except of the websocket handshake (Sec-WebSocket-Protocol header)
+and using SockJS protocol. However, with minor server-side modification you can connect websocket-compatible XMPP library to SockJS server,
+as SockJS also exposes "raw" websocket endpoint.
 
 Ejabberd integration
 --------------------
