@@ -80,12 +80,13 @@ Legend:
 * Remote N - tests against US server (average ping at time of testing: 162ms)
 
 
+Results:
+
 <style type="text/css">
 table, th, td {
     border: 1px solid;
     border-collapse: collapse;
 }
-
 </style>
 <table>
     <tr>
