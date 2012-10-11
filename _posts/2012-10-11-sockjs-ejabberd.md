@@ -149,8 +149,8 @@ Quick analysis
 --------------
 
 1. Looks like Ejabberd BOSH implementation agressively buffers outgoing messages to send them in one response. SockJS also does this for polling transports, but doesn't have any internal delays - if there's data in queue, if will be dumped immediately;
-2. For remote Ejabberd instance with pretty high network latency, results are still in favor of SockJS, even though SockJS did 223 requests for polling
-transport and BOSH did only 118;
+2. For remote Ejabberd instance with pretty high network latency, results are still in favor of SockJS, even though SockJS did 223 requests with polling
+transport and BOSH did only 118 requests;
 3. SockJS streaming transport worked very well in remote server test with almost websocket-like latency;
 4. JSONP-polling transport appears to be a decent alternative for BOSH;
 5. Some transports "scale" better with higher latency. For example, even though xhr-polling and xhr-streaming had same latency against local server,
