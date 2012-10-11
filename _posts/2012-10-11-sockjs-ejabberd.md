@@ -30,7 +30,8 @@ Why SockJS instead of raw websockets and BOSH as fallback? Three reasons:
 Protocol
 --------
 
-Instead of using custom handshake (like in BOSH), client sends and receives "normal" XMPP stream header. SockJS connection is just replacement of the raw TCP connection with exactly same protocol.
+Instead of using custom handshake (like in BOSH), client sends and receives "normal" XMPP stream header. So, SockJS is used as TCP replacement
+with exactly same protocol.
 
 Ejabberd integration
 --------------------
