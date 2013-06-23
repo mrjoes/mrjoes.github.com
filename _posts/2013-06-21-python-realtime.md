@@ -11,8 +11,7 @@ TBD: .. intro ..
 
 However, in lots of cases, there's need to push updates from the server at will or even have low-latency bi-directional communication between client and the server.
 
-There are different ways to accomplish this and in this post I will try to give introductory explanations of
-various techniques used, how to write server in python as well as few hints how to integrate realtime
+In this post I will try to give introductory explanations of various ways to enable bi-directional communication between browser ad  used, how to write server in python as well as few hints how to integrate realtime
 portion to "conventional" website which is running typical Python Web framework like Flask or Django.
 
 Little Bit of Theory
@@ -20,31 +19,27 @@ Little Bit of Theory
 
 Lets try to solve "push" problem - how is it possible to send data from the server when it is browser who initiates data exchange?
 
-Solution is relatively simple: make AJAX request to the server to ask for updates. While it seems like what's usually happening between browser and server, there's one catch. If server does not have anything to send, it will keep connection open until some data is available for the client. When client receives response, it makes another request to get more data.
+Solution is quite simple: make AJAX request to the server to ask for updates. While it seems like what's usually happening between browser and server, there's a catch. If server does not have anything to send, it will keep connection open until some data is available for the client. After client received response, it will make another request to get more data.
 
 This technique is called long-polling.
 
-Obviously, this is not very efficient approach. Noise to signal is very low in most of the cases - it takes longer to
+Obviously, this is not very efficient approach. Noise to signal ratio is very low in most of the cases - it takes longer to
 parse HTTP request headers than to send actual payload to the client.
 
 But, unfortunately, it is most compatible way to push data to the client right now.
 
-HTTP/1.1 improved situation a bit. TCP connection state can be controlled by [Keep-Alive](http://en.wikipedia.org/wiki/HTTP_persistent_connection) header and, by default, it
-will be kept open after serving request. This feature improved long-polling latency, as there's no need to reopen TCP connection for each polling request.
+HTTP/1.1 improved situation a bit. TCP connection can be controlled by [Keep-Alive](http://en.wikipedia.org/wiki/HTTP_persistent_connection) header and, by default, connection will be kept open after serving request. This feature improved long-polling latency, as there's no need to reopen TCP connection for each polling request.
 
-Another helpful feature was introduction of [chunked transfer encoding](http://wikipedia.org/wiki/Chunked_transfer_encoding) for HTTP response. It allows breaking response into smaller chunks and flush them immediately. There's JavaScript support for chunked encoding as well - it is possible to get notified when another chunk was received by the browser.
+HTTP/1.1 also introduced [chunked transfer encoding](http://wikipedia.org/wiki/Chunked_transfer_encoding). It allows breaking response into smaller chunks and send them to the client immediately, without finishing HTTP request. Browser has JavaScript API to handle partial updates, so this can be used to improve performance and latency when pushing data from the server.
 
-Unfortunately, there are lots of incompatible proxies that attempt to cache whole response before sending it further, so client won't receive anything until proxy decided that request was finished. While it is sort of OK for "normal" Web - client will still get response from the server, but it breaks whole idea of using chunked transfer encoding for real-time purposes.
+Unfortunately, there are lots of incompatible proxies that attempt to cache whole response before sending it down the line, so client won't receive anything until proxy decided that request was finished. While it is sort of OK for "normal" Web - client will still get response from the server, but it breaks whole idea of using chunked transfer encoding for any kind of real-time purposes.
 
-On September 2006, Opera Software implemented experimental [Server-Sent Events](http://en.wikipedia.org/wiki/Server-sent_events) feature for its browser. While its behavior is very similar to chunked transfer encoding, protocol is different and has better client-side API.
+On September 2006, Opera Software implemented experimental [Server-Sent Events](http://en.wikipedia.org/wiki/Server-sent_events) feature for its browser. While SSE behavior is very similar to chunked transfer encoding, protocol is different and has better client-side API.
 
 SSE was approved by WHATWG on April 23, 2009 and supported by almost all modern desktop browsers (except of Internet Explorer).
 You can see compatibility [chart here](http://caniuse.com/#feat=eventsource).
 
-While SSE is a bit more compatible than chunked transfer encoding, but it is not supported by all browsers. And there is
-same problem with some misbehaving proxies, but situation is not as bad as with chunked encoding.
-
-There are other techniques as well, like forever-iframe which is only way to do cross-domain push for Internet Explorer versions less than 8, HTMLFile - Internet Explorer version of the server sent events, etc.
+There are other techniques as well, like [forever-iframe](http://cometdaily.com/2007/11/05/the-forever-frame-technique/) which is only way to do cross-domain push for Internet Explorer versions less than 8, [HTMLFile](http://cometdaily.com/2007/10/25/http-streaming-and-internet-explorer/) - Internet Explorer hack for the SSE, etc.
 
 Lets see pros and cons of these approaches:
 
@@ -484,8 +479,19 @@ By implementing different message handlers and appropriate logic on client-side,
 
 Games are stateful - server has to keep track of what's happening in the game. This also means that it is somewhat harder to scale it.
 
-In example above, one server will handle all games for all connected players. But what if we need to start two servers? As they don't know about each one state, players connected to first server won't be able to play with players from second server. While it might work in some cases, especially when there's region based player distribution, it won't really work
+In example above, one server will handle all games for all connected players. But what if we need to start two servers? As they don't know about each one state, players connected to first server won't be able to play with players from second server. While it might work in some cases, especially when there's region based player distribution, it is not acceptable in most of the cases.
 
+To solve this problem, you will have to abstract game logic and related state into separate server application and treat realtime portion as a smart adapter between game server and the client.
+
+So, it looks like this (yes, I know, it looks ugly, but better than nothing):
+
+<a href="/shared/posts/python-realtime/realtime-game-servers.png">
+  <img src="/shared/posts/python-realtime/realtime-game-servers.png" alt="Diagram"></img>
+</a>
+
+Client connects to one of realtime servers, authenticates himself, gets list of running games (through some shared state between game and realtime servers). When client wants to play in particular game, it sends request to realtime server, which then talks to game server.
+
+Game servers are not exposed to the Internet and they can be only accessed by realtime servers.
 
 Deployment
 ----------
@@ -495,35 +501,24 @@ It is good idea to serve both Flask and Tornado portions behind the load balance
 There are three deployment options:
 
  1. Serve both Web and realtime portions from the same host and port
+   - Advantages
+     1. Everything looks consistent
+     2. No need to worry about cross-domain scripting policies
+     3. Usually works in environments with restrictive firewall
+   - Disadvantages
+     1. Not compatible with some corporate transparent HTTP proxies
  2. Serve Web server on port 80 and realtime portion on different port
+   - Advantages
+     1. More compatible with transparent proxies
+   - Disadvantages
+     1. Cross-domain scripting issues ([CORS](http://en.wikipedia.org/wiki/Cross-origin_resource_sharing) is not supported by every browser)
+     2. Higher chance to get blocked by firewalls
  3. Serve Web server on main domain (site.com) and realtime portion on subdomain (subdomain.site.com)
-
-Each approach has its advantages and disadvantages:
-
- 1. Everything looks consistent and comes from one domain and port, so cross-domain scripting policies don't kick in. Usually
-    works with restrictive firewalled environments, unless they also have transparent proxy that does not understand
-    WebSocket protocol;
- 2. Usually more compatible with various transparent proxies, but does not work in restrictive environments;
- 3. Realtime portion is logically decoupled from the main Website. Has same problems as first option.
-
-Also, I saw suggestion to use Gevent and make realtime portion coexist with "normal" website in the same process. I'm not sure it is good idea and prefer to split conventional Web application and realtime portion into separate processes.
-
-Scaling
--------
-
-It is very easy to scale stateless servers - just start new worker process, update load balancer and you're set.
-
-With stateful servers it is harder. Depending on application type, there are few things that can be done. Lets take
-card game as an example.
-
-Simplest way to achieve this: host different tables on different servers and make users connect these servers if they
-want to play in particular table. It is a bit hacking, but it will work for simple cases.
-
-Better way to do it is to abstract game logic into separate application server and use SockJS as a smart proxy between
-client and game server. You can use ZeroMQ for communication inside of the cluster instead of Redis, so Redis is no longer
-central point of failure.
-
-Anyway, that's quite large topic to cover in introductory article.
+   - Advantages
+     1. Possible to host realtime portion separately from main site (no need to use same load balancer)
+   - Disadvantages
+     1. Cross-domain scripting issues
+     2. Misbehaving transparent proxies
 
 Real-life experience
 --------------------
@@ -532,19 +527,19 @@ I saw few success stories with sockjs-tornado: [PlayBuildy](http://blog.playbuil
 
 But, unfortunately, I didn't use it myself for large projects.
 
-However, I have quite interesting experience with [sockjs-node](https://github.com/sockjs/sockjs-node) - SockJS server implementation for [nodejs](http://nodejs.org/). I implemented realtime portion for existing website for relatively large radio station. At average, there are around 5k connected clients at the same time.
+However, I have quite interesting experience with [sockjs-node](https://github.com/sockjs/sockjs-node) - SockJS server implementation for [nodejs](http://nodejs.org/). I implemented realtime portion for existing website for a relatively large radio station. At average, there are around 4k connected clients at the same time.
 
-Most connections are short-lived and server is more than just a simple broker: it manages hierarchical channels and channel backlog. Client can subscribe to the channel and should receive all updates pushed to any of the child channels. Client can also request backlog - last N messages sorted by date for channel and its children. So there was a bit of logic on the server as well.
+Most connections are short-lived and server is more than just a simple broker: it manages hierarchical subscription channels (for example radiostation->event->tweet or radiostation->artist->news->tweet) and channel backlog. Client can subscribe to the channel and should receive all updates pushed to any of the child channels as well. Client can also request backlog - last N messages sorted by date for channel and its children. So there was a bit of logic on the server as well.
 
-Overall, nodejs performance is great - 2 instances on one server are able to keep up with all these clients.
+Overall, nodejs performance is great - 3 instances on one physical server are able to keep up with all these clients without any sweat.
 
-But there were too many different problems with nodejs or its libraries to my taste.
+But there were too many problems with nodejs and/or its libraries to my taste.
 
-After deploying to production, server started leaking memory for no apparent reason. All tools showed that heap size is constant, but RSS of the server process kept growing until process was killed by the OS. As a quick solution, nodejs server was restarted every night.
+After deploying to production, server started leaking memory for no apparent reason. All tools showed that heap size is constant, but RSS of the server process kept growing until process was killed by the OS. As a quick solution, nodejs server was restarted every night. Issue was similar to [this](https://github.com/einaros/ws/issues/43), but had nothing to do with SSL, as it was not used.
 
-Upgrading to newer nodejs version helped, until process started crashing with no apparent reason without generating coredump.
+Upgrading to newer nodejs version helped, until process started crashing with no apparent reason and without generating coredump.
 
-And again, upgrading to newer nodejs version helped, until V8 garbage collector started locking up in some cases and it was happening once a day.
+And again, upgrading to newer nodejs version helped, until V8 garbage collector started locking up in some cases and it was happening once a day. It was deadlock in V8, I found exactly same [stack trace](https://code.google.com/p/chromium/issues/detail?id=224201) in Chromium bug tracker.
 
 Newer nodejs version solved garbage collector issue and application is working again.
 
@@ -552,7 +547,7 @@ Also, callback-based programming style makes code not as clean and readable as I
 
 To sum it up - even though nodejs does its job, I had strong feeling that it is not as mature as Python. And I'd rather use Python for such task in the future, so I can be sure that if something goes wrong, it is happening because I failed and issue can be traced relatively easy.
 
-Performance-wise, with WebSocket transport, CPython is on par with nodejs and PyPy is much faster. For long-polling, Tornado on PyPy is approximately 1.5-2 times slower than nodejs when used with proper asynchronous libraries. So it is comparable at least.
+Performance-wise, with WebSocket transport, CPython is on par with nodejs and with PyPy it is much faster. For long-polling, Tornado on PyPy is approximately 1.5-2 times slower than nodejs when used with proper asynchronous libraries. So, given current WebSocket adoption rates, I'd say they're on par.
 
 Final notes
 -----------
