@@ -7,30 +7,27 @@ abstract: Introduction to the real-time web capabilities with help of Python
 Introduction
 ------------
 
-TBD: .. intro ..
+I had interview for the [Flask book](http://www.kickstarter.com/projects/1223051718/practical-flask-book-project) recently and some questions were related to realtime functionality - how it works, how to integrate realtime portion with conventional WSGI applications, how to structure application code and so on.
 
-However, in lots of cases, there's need to push updates from the server at will or even have low-latency bi-directional communication between client and the server.
-
-In this post I will try to give introductory explanations of various ways to enable bi-directional communication between browser ad  used, how to write server in python as well as few hints how to integrate realtime
-portion to "conventional" website which is running typical Python Web framework like Flask or Django.
+We used Google Hangouts and it was supposed to record interview, but it failed. So, I decided to write elaborate blog post instead, in which I will try to cover basics, give short introduction into asynchronous programming in Python, etc.
 
 Little Bit of Theory
---------------------
+====================
 
 Lets try to solve "push" problem - how is it possible to send data from the server when it is browser who initiates data exchange?
 
-Solution is quite simple: make AJAX request to the server to ask for updates. While it seems like what's usually happening between browser and server, there's a catch. If server does not have anything to send, it will keep connection open until some data is available for the client. After client received response, it will make another request to get more data.
+Solution is simple: make AJAX request to the server to ask for updates. While it seems like what's usually happening between browser and server, there's a catch. If server does not have anything to send, it will keep connection open until some data is available for the client. After client received response, it will make another request to get more data.
 
 This technique is called long-polling.
 
 Obviously, this is not very efficient approach. Noise to signal ratio is very low in most of the cases - it takes longer to
-parse HTTP request headers than to send actual payload to the client.
+process HTTP request (parse and validate headers, for example) than to send actual payload to the client.
 
 But, unfortunately, it is most compatible way to push data to the client right now.
 
 HTTP/1.1 improved situation a bit. TCP connection can be controlled by [Keep-Alive](http://en.wikipedia.org/wiki/HTTP_persistent_connection) header and, by default, connection will be kept open after serving request. This feature improved long-polling latency, as there's no need to reopen TCP connection for each polling request.
 
-HTTP/1.1 also introduced [chunked transfer encoding](http://wikipedia.org/wiki/Chunked_transfer_encoding). It allows breaking response into smaller chunks and send them to the client immediately, without finishing HTTP request. Browser has JavaScript API to handle partial updates, so this can be used to improve performance and latency when pushing data from the server.
+HTTP/1.1 also introduced [chunked transfer encoding](http://wikipedia.org/wiki/Chunked_transfer_encoding). It allows breaking response into smaller chunks and send them to the client immediately, without finishing HTTP request.
 
 Unfortunately, there are lots of incompatible proxies that attempt to cache whole response before sending it down the line, so client won't receive anything until proxy decided that request was finished. While it is sort of OK for "normal" Web - client will still get response from the server, but it breaks whole idea of using chunked transfer encoding for any kind of real-time purposes.
 
@@ -39,7 +36,9 @@ On September 2006, Opera Software implemented experimental [Server-Sent Events](
 SSE was approved by WHATWG on April 23, 2009 and supported by almost all modern desktop browsers (except of Internet Explorer).
 You can see compatibility [chart here](http://caniuse.com/#feat=eventsource).
 
-There are other techniques as well, like [forever-iframe](http://cometdaily.com/2007/11/05/the-forever-frame-technique/) which is only way to do cross-domain push for Internet Explorer versions less than 8, [HTMLFile](http://cometdaily.com/2007/10/25/http-streaming-and-internet-explorer/) - Internet Explorer hack for the SSE, etc.
+There are other techniques as well, like [forever-iframe](http://cometdaily.com/2007/11/05/the-forever-frame-technique/) which is only way to do cross-domain push for Internet Explorer versions less than 8, [HTMLFile](http://cometdaily.com/2007/10/25/http-streaming-and-internet-explorer/), etc.
+
+At whole, all these HTTP-based fallbacks go under [Comet](http://en.wikipedia.org/wiki/Comet_(programming)) name.
 
 Lets see pros and cons of these approaches:
 
@@ -56,20 +55,20 @@ increases latency and creates extra load on the server.
 Meet WebSockets
 ---------------
 
-While WebSockets are not really new technology, but specification went through few incompatible iterations and finally was released as [RFC 6455](http://tools.ietf.org/html/rfc6455).
+While WebSockets are not really new technology, but specification went through few incompatible iterations and finally was accepted in form of [RFC 6455](http://tools.ietf.org/html/rfc6455).
 
-In a nutshell, WebSocket is bi-directional connection between server and client over established TCP connection. WebSocket connection is established using ordinary HTTP handshake (with additional WebSocket-related headers) and has additional protocol-level framing, it is not just raw TCP connection opened from the browser.
+In a nutshell, WebSocket is bi-directional connection between server and client over established TCP connection. Connection is established using ordinary HTTP handshake (with additional WebSocket-related headers) and has additional protocol-level framing, so it is not just raw TCP connection opened from the browser.
 
 Biggest problem of the WebSocket protocol is support by browsers, firewalls, proxies and anti-viruses.
 
 Here is browser compatibility [chart](http://caniuse.com/#feat=websockets).
 
-Corporate firewalls usually block WebSocket connections, because it is not possible to inspect data sent over the connection, because data is application specific.
+Corporate firewalls and proxies usually block WebSocket connections for various reasons.
 
-Antiviruses also known to break WebSocket connections going to port 80. For example, older versions of Avast! were treating them as ordinary HTTP connections and attempted to download whole "response" before sending it to the browser.
+Some proxies can't handle WebSocket connection over port 80 - they think it is generic HTTP request and attempt to cache it. Anti-viruses that have HTTP scanning component were caught doing this.
 
 Anyway, WebSocket is best way to establish bi-directional communication between client and server, but can not be used as
-single solution to the problem.
+only one solution to the push problem.
 
 Use Cases
 ---------
@@ -79,14 +78,14 @@ will work just fine.
 
 However, if browser supports WebSocket connection and it can be established, it is better to use it instead.
 
-To summarize, best approach is: try to open WebSocket connection first and if it fails - try to fall back to one of the HTTP-based transport.
+To summarize, best approach is: try to open WebSocket connection first and if it fails - try to fall back to one of the HTTP-based transports. It is also possible to "upgrade" connection - start with long-polling and try to establish WebSocket connection. If it succeeds, switch to WebSocket connection. While this approach might reduce initial connection times, but it requires careful server-side implementation to avoid any race conditions when switching between connections.
 
 Polyfill Libraries
 ------------------
 
-Luckily enough, there's no need to implement everything by yourself. It is very hard to work around all known browser, proxy and firewall implementation quirks.
+Luckily enough, there's no need to implement everything by yourself. It is very hard to work around all known browser, proxy and firewall implementation quirks, especially when starting from scratch.
 
-There are some polyfill libraries, like [SockJS](https://github.com/sockjs) or [Socket.IO](http://socket.io/), that implement WebSocket-like API on top of variety of different transport implementation.
+There are some polyfill libraries, like [SockJS](https://github.com/sockjs), [Socket.IO](http://socket.io/) and some others, that implement WebSocket-like API on top of variety of different transport implementation.
 
 While they differ by exposed server and client API, they share common idea: use best transport possible in given circumstances and provide consistent API on the server side.
 
@@ -96,14 +95,14 @@ different approach - it establishes long-polling connection and attempts to upgr
 
 In any case - these libraries will try to establish logical bi-directional connection to the server using best available transport.
 
-Unfortunately, I had poor experience with Socket.IO 0.8.x, and was using SockJS for my projects lately, even though implemented [TornadIO2](https://github.com/mrjoes/tornadio2) - Socket.IO server implementation on top of [Tornado](http://tornadoweb.org/) framework.
+Unfortunately, I had poor experience with Socket.IO 0.8.x, and was using [sockjs-tornado](https://github.com/mrjoes/sockjs-tornado) for my projects lately, even though implemented [TornadIO2](https://github.com/mrjoes/tornadio2) - Socket.IO server implementation on top of [Tornado](http://tornadoweb.org/) framework.
 
 Server Side
 ===========
 
 Lets go back to the Python.
 
-Unfortunately, WSGI-based servers can not be used to create realtime applications, as WSGI protocol is synchronous. WSGI server can only handle one request at the same time.
+Unfortunately, WSGI-based servers can not be used to create realtime applications, as WSGI protocol is synchronous. WSGI server can handle only one request at a time.
 
 Lets check long-polling transport again:
 
@@ -149,14 +148,15 @@ Lets check long-polling example again, but with help of greenlets:
 
  1. Client opens HTTP connection to the server to get more data
  2. Server spawns new greenlet that will be used to handle long-polling logic
- 3. There's no data to send, so greenlet sleeps
+ 3. There's no data to send, so greenlet sleeps, pausing currently running function
  4. When there's something to send, greenlet wakes up, sends data and closes connection
 
 In pseudo-code, it looks exactly the same as synchronous version:
 
 {% highlight python %}
 def handle_request(request):
-    # If there's no data available, greenlet will sleep and execution will be transferred to another greenlet
+    # If there's no data available, greenlet will sleep
+    # and execution will be transferred to another greenlet
     data = get_more_data(request)
     return make_response(data)
 {% endhighlight %}
@@ -165,7 +165,13 @@ Why is greenlets are great? Because they allow writing asynchronous code in sync
 
 [Gevent](http://www.gevent.org/) is excellent example of what can be achieved with greenlets. This framework patches Python standard library to enable asynchronous IO (Input-Output) and makes all code asynchronous without explicit context switching.
 
-On other hand, greenlet implementation for CPython is quite scary. CPython uses unmanaged stack for interpreter and all C extensions and running python application data, so it is quite hard to implement cooperative concurrency. Greenlet attempts to overcome limitation by copying part of the stack to the memory in the heap and back. While it works for most of the cases, especially with tested libraries, but any untested 3rd party extension with C module might create bizarre bugs like stack and heap corruption.
+On other hand, greenlet implementation for CPython is quite scary.
+
+Each coroutine has its own stack. CPython uses unmanaged stack for Python applications and when Python program runs, stack looks like improper lasagna - interpreter data mixed with native extension data, mixed with Python application data and everything is in random order. It is quite hard to preserve stack trace in such case and do painless context switching between coroutines, as it is hard to predict what can be stored in the stack.
+
+Greenlet attempts to overcome the limitation by copying part of the stack to the heap and back. While it works for most of the cases, but any untested 3rd party library with native extension might create bizarre bugs like stack and heap corruption.
+
+For example, native extension stored locked critical section object on the stack and greenlet decided to go to sleep. Boom, application deadlocked, as library never expected that function won't return value.
 
 Callbacks
 ---------
@@ -200,7 +206,7 @@ There are different ways to improve situation with callbacks:
  - Using [futures](http://docs.python.org/dev/library/concurrent.futures.html)
  - Using [generators](http://wiki.python.org/moin/Generators)
 
-What is future? First of all, future is a return value from a function. It is an object that has few properties:
+What is future? First of all, future is a return value from a function and it is an object that has few properties:
 
  1. State of the function execution (idling, running, stopped, etc)
  2. Return value (might be empty if function is not yet executed)
@@ -220,7 +226,7 @@ def handle_request(request):
     return make_response(data)
 {% endhighlight %}
 
-As you can see, generators allow writing asynchronous code in sort-of synchronous fashion.
+As you can see, generators allow writing asynchronous code in sort-of synchronous fashion. Check [PEP 342](http://www.python.org/dev/peps/pep-0342/) for more information.
 
 Biggest problem with generators: programmer should know if function is asynchronous or not before calling it.
 
@@ -236,24 +242,24 @@ def process_request(request):
     return data
 {% endhighlight %}
 
-This code won't work as expected, as calling generator function in python returns generator object without executing function. So, in this case, *process_request* should be also made asynchronous (wrapped with *coroutine* decorator) or some other means to execute function should be used.
+This code won't work as expected, as calling generator function in python returns generator object without executing body of the function. In this case, *process_request* should be also made asynchronous (wrapped with *coroutine* decorator) and should yield from *get_more_data*. Another way - use framework capabilities to run asynchronous function (like passing callback or adding callback to Future).
 
-Another problem - if existing library function should be made asynchronous, all its callers should be updated as well. In some cases, their callers should be updated as well and so on.
+Another problem - if there's need to make existing library asynchronous, all its callers should be updated as well. In some cases, their callers should be updated too and so on, up to the top.
 
 Summary
 -------
 
-Greenlets make everything "easy" at cost of possible issues, allow implicit context switching.
+Greenlets make everything "easy" at cost of possible issues and allow implicit context switching.
 
 Code with callbacks is a mess. Futures improve situation. Generators make code easier to read.
 
 It appears that "official" way to write asynchronous applications in Python would be to use callbacks/futures/generators and not greenlets. See [PEP 3156](http://www.python.org/dev/peps/pep-3156/).
 
-Sure, nothing will prevent you from using greenlet-based frameworks as well. Having choice is a good thing.
+Sure, nothing will prevent you from using greenlet-based frameworks at all. Having choice is a good thing.
 
-While Gevent entry barrier is very low - "Oh, look, it just works with my old code", it is quite painful to figure out what went wrong if start seeing stack corruption in production.
+While Gevent entry barrier is very low - "Oh, look, it just works with my old code", amount of knowledge required to debug weird crash is much higher.
 
-I prefer explicit context switching and little bit cautious of greenlets after spending few nights with gdb in production environment figuring out weird interpreter crashes.
+I prefer explicit context switching and little bit cautious of greenlets after spending several nights with gdb in production environment figuring out why interpreter crashes all of a sudden.
 
 Asynchronous Frameworks
 -----------------------
@@ -268,6 +274,7 @@ In most of the cases, there's no need to write own asynchronous network layer an
 
  - Pythonic
  - Fast
+ - Predictable
  - Actively developed
  - Source code is easy to read and understand
 
@@ -280,9 +287,9 @@ Tornado
 
 Tornado architecture is pretty simple. There's main loop (called IOLoop). IOLoop checks for IO events on sockets, file descriptors, etc (with help of [epoll](http://en.wikipedia.org/wiki/Epoll), [kqueue](http://en.wikipedia.org/wiki/Kqueue) or [select](http://en.wikipedia.org/wiki/Select_(Unix))) and manages time-based callbacks. When something happens Tornado calls registered callback function.
 
-For example, if there's incoming connection on bound socket, Tornado will call appropriate callback, which will create HTTP request handler class, which will read headers from the socket and so on.
+For example, if there's incoming connection on bound socket, Tornado will trigger appropriate callback function, which will create HTTP request handler class, which will read headers from the socket and so on.
 
-Tornado is more than just a wrapper on top of epoll - it contains own templates, authentication system, asynchronous web client, etc.
+Tornado is more than just a wrapper on top of epoll - it contains own templating and authentication system, asynchronous web client, etc.
 
 If you're not familiar with tornado, take a look at relatively short [framework overview](http://www.tornadoweb.org/en/stable/overview.html).
 
@@ -312,13 +319,13 @@ class ChatConnection(sockjs.tornado.SockJSConnection):
 
 For sake of example, chat does not have any internal protocol or authentication - it just broadcasts messages to all participants.
 
-Yes, that's it. I omitted Tornado initialization and imports though. It does not matter if client does not support WebSocket transport and SockJS fill fall-back to long-polling transport - developer will write code once and sockjs-tornado abstracts protocol differences.
+Yes, that's it. It does not matter if client does not support WebSocket transport and SockJS fill fall-back to long-polling transport - developer will write code once and sockjs-tornado abstracts protocol differences.
 
 Logic is pretty simple as well:
 
- - For every incoming SockJS connection, sockjs-tornado will create new instance of the connection class
+ - For every incoming SockJS connection, sockjs-tornado will create new instance of the connection class and call *on_open*
  - In *on_open*, handler will broadcast to all chat participants that someone joined and add *self* to the participants set
- - If something is received from the client, *on_message* will be called and message will be broadcasted to all participants
+ - If something was received from the client, *on_message* will be called and message will be broadcasted to all participants
  - If client disconnects, *on_close* will remove him from the set and broadcast that he left
 
 Full example, with client side, can be found [here](https://github.com/mrjoes/sockjs-tornado/blob/master/examples/chat/chat.py).
@@ -326,13 +333,13 @@ Full example, with client side, can be found [here](https://github.com/mrjoes/so
 Managing State
 --------------
 
-In some cases, to process request from the client, some previous client data should be stored on the server. State adds complexity - it uses memory and it makes scaling harder. For example, without shared session state, clients can only "talk" to one server only. With shared session state - there's additional IO overhead for each transaction to fetch state from the storage.
+In some cases, to process request from the client, some previous client data should be stored on the server. State adds complexity - it uses memory and it makes scaling harder. For example, without shared session state, clients can only "talk" to one server only - you can't distribute requests in round-robin fashion anymore. With shared session state - there's additional IO overhead for each transaction to fetch state from the storage for every client request.
 
-In most of the cases, it is not possible to implement pure stateless server with any of the HTTP transports. To maintain logical connection, some sort of per-connection session is required to make sure that no data is lost between client polls.
+Unfortunately, it is not possible to implement pure stateless server for any of the HTTP transports. To maintain logical connection, some sort of per-connection session state is required to make sure that no data is lost between client polls.
 
-Depending on task, it is possible to split stateful networking layer (long-polling) from stateless business tier (actual application). In this case, business tier worker does not have to be asynchronous at all - it receives task, processes it and sends response back. And because worker is stateless, it is possible to start lots of workers in parallel to increase overall throughput of the application.
+Depending on task, it is possible to split stateful networking layer (Comet) from stateless business tier (actual application). In this case, business tier worker does not have to be asynchronous at all - it receives task, processes it and sends response back. And because worker is stateless, it is possible to start lots of workers in parallel to increase overall throughput of the application.
 
-Because networking layer is stateful, load balancer in front of application should be aware that it should use sticky sessions for realtime connections. Overall, that's not really an issue with even user distribution between servers behind cluster.
+Because networking layer is stateful, load balancer in front of application should use sticky sessions (client should go to same server every time) for realtime connections.
 
 Integrating with WSGI applications
 ==================================
@@ -345,15 +352,15 @@ There are two ways to integrate realtime portion:
  1. In process
  2. Out of process
 
-With Gevent, it is possible to make WSGI application coexist in same process with realtime portion. With Tornado and other callback-based frameworks, while it is possible for realtime portion to run in same process (in separate thread) it is not advised for performance reasons (due to [GIL](http://en.wikipedia.org/wiki/Global_Interpreter_Lock)).
+With Gevent, it is possible to make WSGI application coexist in same process with realtime portion. With Tornado and other callback-based frameworks, while it is possible for realtime portion to run in same process, in separate thread, it is not advised for performance reasons (due to [GIL](http://en.wikipedia.org/wiki/Global_Interpreter_Lock)).
 
-And again, I prefer out-of-process approach, where separate set of processes/servers are responsible for realtime portion and they're completely disconnected from the main website. They might be part of one project/repository, but they run side by side.
+And again, I prefer out-of-process approach, where separate set of processes/servers are responsible for realtime portion. They might be part of one project/repository, but they run side by side, separately.
 
 Lets assume you have social network and want to push status updates in realtime.
 
 Most straightforward way to accomplish this is to create separate server which will handle realtime connections and listen for notifications from main website application.
 
-Notification can happen either through custom REST API exposed by realtime server (works OK for small deployments), through [Redis](http://redis.io/) PUBLISH/SUBSCRIBE functionality (there's high chance your project already uses Redis for something), with help of [ZeroMQ](http://www.zeromq.org/), using AMQP message bus (like [RabbitMQ](http://www.rabbitmq.com/)) and so on.
+Notifications can happen either through custom REST API exposed by realtime server (works OK for small deployments), through [Redis](http://redis.io/) PUBLISH/SUBSCRIBE functionality (there's high chance your project already uses Redis for something), with help of [ZeroMQ](http://www.zeromq.org/), using AMQP message bus (like [RabbitMQ](http://www.rabbitmq.com/)) and so on.
 
 Structuring your code
 ---------------------
@@ -364,6 +371,8 @@ I prefer having one repository for both Flask application and realtime portion o
 
 For Flask, I use ordinary python libraries: SQLAlchemy, redis-py, etc. For Tornado I have to use asynchronous alternatives
 or use thread pool to execute long-running synchronous functions to prevent blocking its ioloop.
+
+There are two commands in my *manage.py*: one to start Web application and another one to start Tornado-based realtime portion.
 
 Lets check few use cases.
 
@@ -404,7 +413,7 @@ if __name__ == '__main__':
 
 Full example is [here](https://gist.github.com/mrjoes/3284402).
 
-Brokers are stateless - they don't really store any application-specific state, so you can start as many of them as you want to keep up with increased load.
+Brokers are stateless - they don't really store any application-specific state, so you can start as many of them as you want to keep up with increased load, as long as balancer is properly configured.
 
 Games
 -----
@@ -481,7 +490,9 @@ Games are stateful - server has to keep track of what's happening in the game. T
 
 In example above, one server will handle all games for all connected players. But what if we need to start two servers? As they don't know about each one state, players connected to first server won't be able to play with players from second server. While it might work in some cases, especially when there's region based player distribution, it is not acceptable in most of the cases.
 
-To solve this problem, you will have to abstract game logic and related state into separate server application and treat realtime portion as a smart adapter between game server and the client.
+Depending on game rule complexity, it is possible to use fully connected topology - every server is connected to every other other server. Unfortunately, it is not very efficient either.
+
+To solve this problem, you can abstract game logic and related state into separate server application and treat realtime portion as a smart adapter between game server and the client.
 
 So, it looks like this (yes, I know, it looks ugly, but better than nothing):
 
@@ -490,6 +501,8 @@ So, it looks like this (yes, I know, it looks ugly, but better than nothing):
 </a>
 
 Client connects to one of realtime servers, authenticates himself, gets list of running games (through some shared state between game and realtime servers). When client wants to play in particular game, it sends request to realtime server, which then talks to game server.
+
+Also, for this task, I'll use ZeroMQ (or AMQP bus) instead of Redis, because Redis becomes single point of failure.
 
 Game servers are not exposed to the Internet and they can be only accessed by realtime servers.
 
@@ -500,7 +513,7 @@ It is good idea to serve both Flask and Tornado portions behind the load balance
 
 There are three deployment options:
 
- 1. Serve both Web and realtime portions from the same host and port
+ 1. Serve both Web and realtime portions from the same host and port and use URL-based routing to distinguish between them
    - Advantages
      1. Everything looks consistent
      2. No need to worry about cross-domain scripting policies
@@ -527,11 +540,11 @@ I saw few success stories with sockjs-tornado: [PlayBuildy](http://blog.playbuil
 
 But, unfortunately, I didn't use it myself for large projects.
 
-However, I have quite interesting experience with [sockjs-node](https://github.com/sockjs/sockjs-node) - SockJS server implementation for [nodejs](http://nodejs.org/). I implemented realtime portion for existing website for a relatively large radio station. At average, there are around 4k connected clients at the same time.
+However, I have quite interesting experience with [sockjs-node](https://github.com/sockjs/sockjs-node) - SockJS server implementation for [nodejs](http://nodejs.org/). I implemented realtime portion for existing website for a relatively large radio station. At average, there are around 3,500 connected clients at the same time.
 
-Most connections are short-lived and server is more than just a simple broker: it manages hierarchical subscription channels (for example radiostation->event->tweet or radiostation->artist->news->tweet) and channel backlog. Client can subscribe to the channel and should receive all updates pushed to any of the child channels as well. Client can also request backlog - last N messages sorted by date for channel and its children. So there was a bit of logic on the server as well.
+Most connections are short-lived and server is more than just a simple broker: it manages hierarchical subscription channels (for example radiostation->event->tweet or radiostation->artist->news->tweet) and channel backlog. Client can subscribe to the channel and should receive all updates pushed to any of the child channels as well. Client can also request backlog - last N messages sorted by date for channel and its children. So there was a bit of logic on the server.
 
-Overall, nodejs performance is great - 3 instances on one physical server are able to keep up with all these clients without any sweat.
+Overall, nodejs performance is great - 3 server processes on one physical server are able to keep up with all these clients without any sweat and there's a lot room for growth.
 
 But there were too many problems with nodejs and/or its libraries to my taste.
 
@@ -547,11 +560,17 @@ Also, callback-based programming style makes code not as clean and readable as I
 
 To sum it up - even though nodejs does its job, I had strong feeling that it is not as mature as Python. And I'd rather use Python for such task in the future, so I can be sure that if something goes wrong, it is happening because I failed and issue can be traced relatively easy.
 
-Performance-wise, with WebSocket transport, CPython is on par with nodejs and with PyPy it is much faster. For long-polling, Tornado on PyPy is approximately 1.5-2 times slower than nodejs when used with proper asynchronous libraries. So, given current WebSocket adoption rates, I'd say they're on par.
+Performance-wise, with WebSocket transport, CPython is on par with nodejs and PyPy is much faster than both. For long-polling, Tornado on PyPy is approximately 1.5-2 times slower than nodejs when used with proper asynchronous libraries. So, given current WebSocket adoption state, I'd say they're on par.
+
+Anyway, I don't see reason to switch to drop Python in favor of nodejs to implement realtime portion.
 
 Final notes
 -----------
 
-I hope this post will help you to get started with realtime Web using Python.
+While one might argue that Python is not best language to write asynchronous code with. Sure, Erlang has built-in tools to write efficient and scalable applications (and there's [sockjs-erlang](https://github.com/sockjs/sockjs-erlang) too), but it is so much harder to find Erlang developers. Clojure/Scala are another great candidates, but Java is completely different world with own libraries, methodologies and conventions. And it is still harder to find decent Clojure developer than to find good Python guy.
 
-If you have any comments, questions or updates - feel free to contact me.
+In most of the cases, software development is trade-off between development costs and performance. And I think that Python is in good position, especially with [PyPy](http://www.pypy.org/).
+
+I hope this post will help you to get started with realtime Web using Python language.
+
+Anyway, if you have any comments, questions or updates - feel free to contact me.
