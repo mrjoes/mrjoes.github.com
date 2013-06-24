@@ -510,7 +510,7 @@ Depending on game rule complexity, it is possible to use fully connected topolog
   <img src="/shared/posts/python-realtime/game-interconnect.png" alt="Diagram"></img>
 </a>
 
-In this case, game state should have minimum required information to identify player, manage his game-related state and send game-related messages to appropriate server(s), so they can forward them to the client.
+In this case, game state should have required information to identify player, manage his game-related state and send game-related messages to appropriate server(s), so they can forward them to the actual clients.
 
 While this approach works, but as asynchronous application is single-threaded, it is better to split game logic and related state into separate server application and treat realtime portion as a smart adapter between game server and the client.
 
@@ -520,7 +520,7 @@ So, it can work like this:
   <img src="/shared/posts/python-realtime/realtime-game-servers.png" alt="Diagram"></img>
 </a>
 
-Client connects to one of realtime servers, authenticates himself, gets list of running games (through some shared state between game and realtime servers). When client wants to play in particular game, it sends request to realtime server, which then talks to the game server which hosts the game. While this looks very similar to full-interconnected solution, realtime and game servers are not interconnected. Scaling is simple as well - add more realtime server or game servers, as their state is isolated and becomes manageable.
+Client connects to one of realtime servers, authenticates himself, gets list of running games (through some shared state between game and realtime servers). When client wants to play in particular game, it sends request to realtime server, which then talks to the game server which hosts the game. While this looks very similar to fully-interconnected solution, servers on same tier don't interact with each other providing effective state isolation. Scaling is simple as well - add more realtime server or game servers, as their state is isolated and becomes manageable.
 
 Also, for this task, I'd use ZeroMQ (or AMQP bus) instead of Redis, because Redis becomes single point of failure.
 
