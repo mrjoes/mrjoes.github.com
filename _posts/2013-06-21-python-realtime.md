@@ -142,13 +142,13 @@ There are two ways to write asynchronous code in Python:
 
 In a nutshell, greenlets allow you to write functions that can pause their execution in the middle and then continue their execution later.
 
-Greenlet implementation was back-ported to CPython from [Stackless Python](http://www.stackless.com/). While it might seem that CPython with greenlet module is same as Stackless - it is not true. Stackless Python has two modes of context switching: soft and hard. Soft switching involves switching python application stack (pointer swap, fast and easy) and hard switching requires stack slicing (slower and error prone). Greenlet is basically port of the Stackless hard-switching mode.
+Greenlet implementation was back-ported to CPython from [Stackless Python](http://www.stackless.com/). While it might seem that CPython with greenlet module is same as Stackless Python - it is not the case. Stackless Python has two modes of context switching: soft and hard. Soft switching involves switching python application stack (pointer swap, fast and easy) and hard switching requires stack slicing (slower and error prone). Greenlet is basically port of the Stackless hard-switching mode.
 
 Lets check long-polling example again, but with help of greenlets:
 
  1. Client opens HTTP connection to the server to get more data
  2. Server spawns new greenlet that will be used to handle long-polling logic
- 3. There's no data to send, greenlet starts sleeps, effectively pausing currently executing function
+ 3. There's no data to send, greenlet starts sleeping, effectively pausing currently executing function
  4. When there's something to send, greenlet wakes up, sends data and closes connection
 
 In pseudo-code, it looks exactly the same as synchronous version:
