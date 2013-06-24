@@ -5,12 +5,12 @@ layout: default
 Who am I?
 ---------
 
-My name is Serge Koval. Nickname - Joes. Live in Kiev, Ukraine.
+My name is Serge Koval. Live in Kiev, Ukraine.
 
 Profession?
 -----------
 
-Programmer. A bit of python, C# and web-related technologies.
+Programmer. Passionate about Python. Have experience with .NET platform (C# mostly), C, C++, a bit of gamedev and x86 assembly language.
 
 How to reach me
 ---------------

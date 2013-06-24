@@ -5,7 +5,7 @@ layout: default
 {% for p in site.posts limit 5 %}
 	<li>
 		<div class="date">
-			{{ p.date | date:"%b %d"}}
+			{{ p.date | date:"%b %d, %Y"}}
 		</div>
 		<div>
 			<a href="{{ p.url }}"><h3>{{ p.title }}</h3></a>
