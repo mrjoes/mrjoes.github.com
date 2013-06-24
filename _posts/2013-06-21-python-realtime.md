@@ -334,7 +334,7 @@ Server side session is example of state. If server needs some kind of prior data
 
 State adds complexity - it uses memory and it makes scaling harder. For example, without shared session state, clients can only "talk" to one server in the cluster. And with shared session state - there's additional IO overhead for each transaction to fetch state from the storage for every client request.
 
-Unfortunately, it is not possible to implement pure stateless server for Comet server. To maintain logical connection, some sort of per-connection session state is required to make sure that no data is lost in between client polls.
+Unfortunately, it is not possible to implement stateless Comet server. To maintain logical connection, some sort of session state is required to make sure that no data is lost in between client polls.
 
 Depending on the task, it is possible to split stateful networking layer (Comet) from stateless business tier (actual application). In this case, business tier worker does not have to be asynchronous at all - it receives task, processes it and sends response back. And because worker is stateless, it is possible to start lots of workers in parallel to increase overall throughput of the application.
 
