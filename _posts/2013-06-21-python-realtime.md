@@ -122,7 +122,7 @@ If *get_more_data* blocks, whole server is blocked and can't process requests an
 
 Sure, it is possible to create thread per request, but it is very inefficient.
 
-While there are some workarounds (like approach described by [Armin Ronacher](http://lucumr.pocoo.org/2012/8/5/stateless-and-proud/)), variation of which will be described later, asynchronous execution models fit this task better.
+While there are some workarounds (like approach described by [Armin Ronacher](http://lucumr.pocoo.org/2012/8/5/stateless-and-proud/)), variation of which will be discussed later, asynchronous execution models fit this task better.
 
 In asynchronous execution model, server still processes requests sequentially and in one thread, but can transfer control to another request handler when there's nothing to do.
 
