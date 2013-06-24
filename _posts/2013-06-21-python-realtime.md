@@ -161,7 +161,7 @@ def handle_request(request):
     return make_response(data)
 {% endhighlight %}
 
-Why is greenlets are great? Because they allow writing asynchronous code in synchronous fashion. They allow using existing, synchronous libraries in asynchronously. Context switching magic is hidden by greenlet implementation.
+Why is greenlets are great? Because they allow writing asynchronous code in synchronous fashion. They allow using existing, synchronous libraries asynchronously. Context switching magic is hidden by greenlet implementation.
 
 [Gevent](http://www.gevent.org/) is excellent example of what can be achieved with greenlets. This framework patches Python standard library to enable asynchronous IO (Input-Output) and makes all code asynchronous without explicit context switching.
 
