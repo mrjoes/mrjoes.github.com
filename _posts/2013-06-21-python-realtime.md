@@ -49,7 +49,7 @@ Lets see pros and cons of these approaches:
    or not before establishing connection;
 
 But all these approaches share one problem: they provide ways to push data from the server to the client, but to establish
-bi-directional communication, client will have to make AJAX request to the server every time it wants to send some data. This
+bidirectional communication, client will have to make AJAX request to the server every time it wants to send some data. This
 increases latency and creates extra load on the server.
 
 Meet WebSockets
@@ -57,7 +57,7 @@ Meet WebSockets
 
 While WebSockets are not really new technology, but specification went through few incompatible iterations and finally was accepted in form of [RFC 6455](http://tools.ietf.org/html/rfc6455).
 
-In a nutshell, WebSocket is bi-directional connection between server and client over established TCP connection. Connection is established using HTTP-compatible handshake (with additional WebSocket-related headers) and has additional protocol-level framing, so it is more than just a raw TCP connection opened from the browser.
+In a nutshell, WebSocket is bidirectional connection between server and client over established TCP connection. Connection is established using HTTP-compatible handshake (with additional WebSocket-related headers) and has additional protocol-level framing, so it is more than just a raw TCP connection opened from the browser.
 
 Biggest problem of the WebSocket protocol is support by browsers, firewalls, proxies and anti-viruses.
 
@@ -67,7 +67,7 @@ Corporate firewalls and proxies usually block WebSocket connections for various 
 
 Some proxies can't handle WebSocket connection over port 80 - they think it is generic HTTP request and attempt to cache it. Anti-viruses that have HTTP scanning component were caught doing this.
 
-Anyway, WebSocket is best way to establish bi-directional communication between client and server, but can not be used as
+Anyway, WebSocket is best way to establish bidirectional communication between client and server, but can not be used as
 single solution to the push problem.
 
 Use Cases
@@ -93,7 +93,7 @@ For example, if browser supports WebSocket protocol, polyfill library will try t
 they will fall-back to next best transport and so on. [Engine.IO](https://github.com/LearnBoost/engine.io/) uses slightly
 different approach - it establishes long-polling connection first and attempts to upgrade to WebSocket in background.
 
-In any case - these libraries will try to establish logical bi-directional connection to the server using best available transport.
+In any case - these libraries will try to establish logical bidirectional connection to the server using best available transport.
 
 Unfortunately, I had poor experience with Socket.IO 0.8.x, and use [sockjs-tornado](https://github.com/mrjoes/sockjs-tornado) for my projects, even though I wrote [TornadIO2](https://github.com/mrjoes/tornadio2) - Socket.IO server implementation on top of [Tornado](http://tornadoweb.org/) framework earlier.
 
