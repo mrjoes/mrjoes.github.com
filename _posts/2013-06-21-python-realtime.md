@@ -138,7 +138,7 @@ Greenlets
 There are two ways to write asynchronous code in Python:
 
  - Using [coroutines](http://en.wikipedia.org/wiki/Coroutine) (also known as greenlets)
- - Using [callbacks](http://en.wikipedia.org/wiki/Callback_(computer_programming))
+ - Using [callbacks](http://en.wikipedia.org/wiki/Callback_(computer_programming)
 
 In a nutshell, greenlets allow you to write functions that can pause their execution in the middle and then continue their execution later.
 
