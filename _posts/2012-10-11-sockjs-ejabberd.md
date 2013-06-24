@@ -7,10 +7,11 @@ abstract: SockJS vs BOSH latency tests
 Last few days I spent integrating SockJS transport library into Ejabberd and Strophe. And here are some thoughts and impressions.
 
 Just in case:
-1. [Ejabberd](http://www.ejabberd.im/) is XMPP (Jabber) server written in Erlang;
-2. BOSH is "Bidirectional-streams Over Synchronous HTTP", basically custom protocol over HTTP which allows browsers to talk to XMPP server. Defined [here](http://xmpp.org/extensions/xep-0206.html);
-3. [Strophe](http://strophe.im/) is XMPP protocol library written in JavaScript;
-4. [SockJS](http://sockjs.org/) is websocket emulation protocol. It works over real websockets if there's browser support or uses one of the fallback transports (long polling, etc).
+
+  1. [Ejabberd](http://www.ejabberd.im/) is XMPP (Jabber) server written in Erlang;
+  2. BOSH is "Bidirectional-streams Over Synchronous HTTP", basically custom protocol over HTTP which allows browsers to talk to XMPP server. Defined [here](http://xmpp.org/extensions/xep-0206.html);
+  3. [Strophe](http://strophe.im/) is XMPP protocol library written in JavaScript;
+  4. [SockJS](http://sockjs.org/) is websocket emulation protocol. It works over real websockets if there's browser support or uses one of the fallback transports (long polling, etc).
 
 Why SockJS?
 -----------
