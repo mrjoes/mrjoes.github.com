@@ -12,7 +12,7 @@ I had interview for the [Flask book](http://www.kickstarter.com/projects/1223051
 We used Google Hangouts and it was supposed to record interview, but it failed. So, I decided to write elaborate blog post instead, in which I will try to cover basics, give short introduction into asynchronous programming in Python, etc.
 
 Little Bit of Theory
-====================
+--------------------
 
 Lets try to solve server "push" problem. Web is all about pulling data - browser makes request to the server, server  generates and sends response back. But what if there's need to push data to the browser?
 
@@ -561,7 +561,7 @@ But, unfortunately, I didn't use it myself for large projects.
 
 However, I have quite interesting experience with [sockjs-node](https://github.com/sockjs/sockjs-node) - SockJS server implementation for [nodejs](http://nodejs.org/). I implemented realtime portion for existing website for a relatively large radio station. At average, there are around 3,500 connected clients at the same time.
 
-Most connections are short-lived and server is more than just a simple broker: it manages hierarchical subscription channels (for example radiostation->event->tweet or radiostation->artist->news->tweet) and a channel backlog. Client can subscribe to the channel and should receive all updates pushed to any of the child channels as well. Client can also request backlog - last N messages sorted by date for channel and its children. So there was a bit of logic on the server.
+Most connections are short-lived and server is more than just a simple broker: it manages hierarchical subscription channels (for example radiostation-event-tweet or radiostation-artist-news-tweet) and a channel backlog. Client can subscribe to the channel and should receive all updates pushed to any of the child channels as well. Client can also request backlog - last N messages sorted by date for channel and its children. So there was a bit of logic on the server.
 
 Overall, nodejs performance is great - 3 server processes on one physical server are able to keep up with all these clients without any sweat and there's a lot room for growth.
 
