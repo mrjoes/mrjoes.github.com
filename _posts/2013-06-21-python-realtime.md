@@ -489,6 +489,7 @@ class GameConnection(SockJSConnection):
         if user_id is None:
             self.send_error('invalid token')
             return
+        self.authenticated = True
         self.send_room_list()
 
     def send_error(self, text):
