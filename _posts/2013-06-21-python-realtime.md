@@ -282,7 +282,7 @@ I'll use Tornado for all examples going forward, but I'm pretty sure that simila
 Tornado
 -------
 
-Tornado architecture is pretty simple. There's main loop (called IOLoop). IOLoop checks for IO events on sockets, file descriptors, etc (with help of [epoll](http://en.wikipedia.org/wiki/Epoll), [kqueue](http://en.wikipedia.org/wiki/Kqueue) or [select](http://en.wikipedia.org/wiki/Select_(Unix))) and manages time-based callbacks. When something happens Tornado calls registered callback function.
+Tornado architecture is pretty simple. There's main loop (called IOLoop). IOLoop checks for IO events on sockets, file descriptors, etc (with help of [epoll](http://en.wikipedia.org/wiki/Epoll), [kqueue](http://en.wikipedia.org/wiki/Kqueue) or [select](http://en.wikipedia.org/wiki/Select_(Unix)) and manages time-based callbacks. When something happens Tornado calls registered callback function.
 
 For example, if there's incoming connection on bound socket, Tornado will trigger appropriate callback function, which will create HTTP request handler class, which will read headers from the socket and so on.
 
