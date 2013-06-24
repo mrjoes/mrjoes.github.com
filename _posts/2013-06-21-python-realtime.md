@@ -85,7 +85,7 @@ Polyfill Libraries
 
 Luckily enough, there's no need to implement everything by yourself. It is very hard to work around all known browser, proxy and firewall quirks, especially when starting from scratch. People invested years of work into making their solutions as stable as possible.
 
-There are some polyfill libraries, like [SockJS](https://github.com/sockjs), [Socket.IO](http://socket.io/), [Faye](http://faye.jcoglan.com/) and some others, that implement WebSocket-like API on top of variety of different transport implementations.
+There are some [polyfill](http://en.wikipedia.org/wiki/Polyfill) libraries, like [SockJS](https://github.com/sockjs), [Socket.IO](http://socket.io/), [Faye](http://faye.jcoglan.com/) and some others, that implement WebSocket-like API on top of variety of different transport implementations.
 
 While they differ by exposed server and client API, they share common idea: use best transport possible in given circumstances and provide consistent API on the server side.
 
