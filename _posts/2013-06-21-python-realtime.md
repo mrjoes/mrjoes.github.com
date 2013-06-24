@@ -14,9 +14,9 @@ We used Google Hangouts and it was supposed to record interview, but it failed. 
 Little Bit of Theory
 ====================
 
-Lets try to solve "push" problem - how is it possible to send data from the server when it is browser who initiates data exchange?
+Lets try to solve server "push" problem. Web is all about pulling data - browser makes request to the server, handles request, generates and sends response back. But what if there's need to push data to the browser?
 
-Solution is simple: make AJAX request to the server to ask for updates. While it seems like what's usually happening between browser and server, there's a catch. If server does not have anything to send, it will keep connection open until some data is available for the client. After client received response, it will make another request to get more data.
+Solution is simple: browser makes AJAX request to the server and asks for updates. While it seems like what's usually happening between browser and server, there's a catch. If server does not have anything to send, it will keep connection open until some data is available for the client. After client received response, it will make another request to get more data.
 
 This technique is called long-polling.
 
@@ -29,7 +29,7 @@ HTTP/1.1 improved situation a bit. TCP connection can be controlled by [Keep-Ali
 
 HTTP/1.1 also introduced [chunked transfer encoding](http://wikipedia.org/wiki/Chunked_transfer_encoding). It allows breaking response into smaller chunks and send them to the client immediately, without finishing HTTP request.
 
-Unfortunately, there are lots of incompatible proxies that attempt to cache whole response before sending it down the line, so client won't receive anything until proxy decided that request was finished. While it is sort of OK for "normal" Web - client will still get response from the server, but it breaks whole idea of using chunked transfer encoding for any kind of real-time purposes.
+Unfortunately, there are lots of incompatible proxies that attempt to cache whole response before sending it further, so client won't receive anything until proxy decided that HTTP request was complete. While it is sort of OK for "normal" Web - client will still get response from the server, but it breaks whole idea of using chunked transfer encoding for any kind of real-time purposes.
 
 On September 2006, Opera Software implemented experimental [Server-Sent Events](http://en.wikipedia.org/wiki/Server-sent_events) feature for its browser. While SSE behavior is very similar to chunked transfer encoding, protocol is different and has better client-side API.
 
@@ -38,14 +38,14 @@ You can see compatibility [chart here](http://caniuse.com/#feat=eventsource).
 
 There are other techniques as well, like [forever-iframe](http://cometdaily.com/2007/11/05/the-forever-frame-technique/) which is only way to do cross-domain push for Internet Explorer versions less than 8, [HTMLFile](http://cometdaily.com/2007/10/25/http-streaming-and-internet-explorer/), etc.
 
-At whole, all these HTTP-based fallbacks go under [Comet](http://en.wikipedia.org/wiki/Comet_(programming)) name.
+As a whole, all these HTTP-based fallbacks go under [Comet](http://en.wikipedia.org/wiki/Comet_(programming)) name.
 
 Lets see pros and cons of these approaches:
 
  - Long-polling is expensive, but very compatible;
  - Chunked transfer encoding is more efficient, but there's chance that it won't work for all clients and there's no way
    to know about it without some sort of probing;
- - SSE is efficient as well, but not supported by all browsers. Good think though - there's way to know if it is supported
+ - SSE is efficient as well, but not supported by all browsers. Good thing though - there's way to know if it is supported
    or not before establishing connection;
 
 But all these approaches share one problem: they provide ways to push data from the server to the client, but to establish
@@ -57,7 +57,7 @@ Meet WebSockets
 
 While WebSockets are not really new technology, but specification went through few incompatible iterations and finally was accepted in form of [RFC 6455](http://tools.ietf.org/html/rfc6455).
 
-In a nutshell, WebSocket is bi-directional connection between server and client over established TCP connection. Connection is established using ordinary HTTP handshake (with additional WebSocket-related headers) and has additional protocol-level framing, so it is not just raw TCP connection opened from the browser.
+In a nutshell, WebSocket is bi-directional connection between server and client over established TCP connection. Connection is established using ordinary HTTP handshake (with additional WebSocket-related headers) and has additional protocol-level framing, so it is more than just a raw TCP connection opened from the browser.
 
 Biggest problem of the WebSocket protocol is support by browsers, firewalls, proxies and anti-viruses.
 
@@ -68,7 +68,7 @@ Corporate firewalls and proxies usually block WebSocket connections for various 
 Some proxies can't handle WebSocket connection over port 80 - they think it is generic HTTP request and attempt to cache it. Anti-viruses that have HTTP scanning component were caught doing this.
 
 Anyway, WebSocket is best way to establish bi-directional communication between client and server, but can not be used as
-only one solution to the push problem.
+single solution to the push problem.
 
 Use Cases
 ---------
@@ -76,26 +76,26 @@ Use Cases
 Keeping everything above in mind, if your application mostly pushes data from the server, HTTP-based transports
 will work just fine.
 
-However, if browser supports WebSocket connection and it can be established, it is better to use it instead.
+However, if browser supports WebSocket transport and WebSocket connection can be established, it is better to use it instead.
 
 To summarize, best approach is: try to open WebSocket connection first and if it fails - try to fall back to one of the HTTP-based transports. It is also possible to "upgrade" connection - start with long-polling and try to establish WebSocket connection. If it succeeds, switch to WebSocket connection. While this approach might reduce initial connection times, but it requires careful server-side implementation to avoid any race conditions when switching between connections.
 
 Polyfill Libraries
 ------------------
 
-Luckily enough, there's no need to implement everything by yourself. It is very hard to work around all known browser, proxy and firewall implementation quirks, especially when starting from scratch.
+Luckily enough, there's no need to implement everything by yourself. It is very hard to work around all known browser, proxy and firewall quirks, especially when starting from scratch. People invested years of work into making their solutions as stable as possible.
 
-There are some polyfill libraries, like [SockJS](https://github.com/sockjs), [Socket.IO](http://socket.io/) and some others, that implement WebSocket-like API on top of variety of different transport implementation.
+There are some polyfill libraries, like [SockJS](https://github.com/sockjs), [Socket.IO](http://socket.io/), [Faye](http://faye.jcoglan.com/) and some others, that implement WebSocket-like API on top of variety of different transport implementations.
 
 While they differ by exposed server and client API, they share common idea: use best transport possible in given circumstances and provide consistent API on the server side.
 
 For example, if browser supports WebSocket protocol, polyfill library will try to establish WebSocket connection. If it fails,
 they will fall-back to next best transport and so on. [Engine.IO](https://github.com/LearnBoost/engine.io/) uses slightly
-different approach - it establishes long-polling connection and attempts to upgrade to WebSocket in background.
+different approach - it establishes long-polling connection first and attempts to upgrade to WebSocket in background.
 
 In any case - these libraries will try to establish logical bi-directional connection to the server using best available transport.
 
-Unfortunately, I had poor experience with Socket.IO 0.8.x, and was using [sockjs-tornado](https://github.com/mrjoes/sockjs-tornado) for my projects lately, even though implemented [TornadIO2](https://github.com/mrjoes/tornadio2) - Socket.IO server implementation on top of [Tornado](http://tornadoweb.org/) framework.
+Unfortunately, I had poor experience with Socket.IO 0.8.x, and was using [sockjs-tornado](https://github.com/mrjoes/sockjs-tornado) for my projects lately, even though I implemented [TornadIO2](https://github.com/mrjoes/tornadio2) - Socket.IO server implementation on top of [Tornado](http://tornadoweb.org/) framework earlier.
 
 Server Side
 ===========
@@ -108,7 +108,7 @@ Lets check long-polling transport again:
 
   1. Client opens HTTP connection to the server to get more data
   2. No data available, server has to keep connection open and wait for data to send
-  3. Because server can't process any other requests, everything else is blocked
+  3. Because server can't process any other requests, everything is blocked
 
 In pseudo-code it'll look like this:
 
@@ -122,7 +122,7 @@ If *get_more_data* blocks, whole server is blocked and can't process requests an
 
 Sure, it is possible to create thread per request, but it is very inefficient.
 
-While there are some workarounds (like approach described by [Armin Ronacher](http://lucumr.pocoo.org/2012/8/5/stateless-and-proud/)), asynchronous execution models fits this task better.
+While there are some workarounds (like approach described by [Armin Ronacher](http://lucumr.pocoo.org/2012/8/5/stateless-and-proud/)), asynchronous execution models fit this task better.
 
 In asynchronous execution model, server still processes requests sequentially and in one thread, but can transfer control to another request handler when there's nothing to do.
 
@@ -142,7 +142,7 @@ There are two ways to write asynchronous code in Python:
 
 In a nutshell, greenlets allow you to write functions that can pause their execution in the middle and then continue their execution later.
 
-Greenlet implementation was back-ported to CPython from [stackless python](http://www.stackless.com/).
+Greenlet implementation was back-ported to CPython from [Stackless Python](http://www.stackless.com/). While it might seem that CPython with greenlet module is same as Stackless - it is not true. Stackless Python has two modes of context switching: soft and hard. Soft involves switching python application stack (pointer swap, fast and easy) and hard switching requires stack slicing (slower and error prone). Greenlet is Stackless hard-switching mode. Unfortunately, Stackless uses hard-mode when Python application uses C modules, so networking libraries like Gevent won't be able to benefit from soft switching mode in most of the cases.
 
 Lets check long-polling example again, but with help of greenlets:
 
@@ -167,11 +167,11 @@ Why is greenlets are great? Because they allow writing asynchronous code in sync
 
 On other hand, greenlet implementation for CPython is quite scary.
 
-Each coroutine has its own stack. CPython uses unmanaged stack for Python applications and when Python program runs, stack looks like improper lasagna - interpreter data mixed with native extension data, mixed with Python application data and everything is in random order. It is quite hard to preserve stack trace in such case and do painless context switching between coroutines, as it is hard to predict what can be stored in the stack.
+Each coroutine has its own stack. CPython uses unmanaged stack for Python applications and when Python program runs, stack looks like lasagna - interpreter data mixed with native extension data, mixed with Python application data and everything is in random order. It is quite hard to preserve stack trace in such case and do painless context switching between coroutines, as it is hard to predict what is on the stack.
 
 Greenlet attempts to overcome the limitation by copying part of the stack to the heap and back. While it works for most of the cases, but any untested 3rd party library with native extension might create bizarre bugs like stack and heap corruption.
 
-For example, native extension stored locked critical section object on the stack and greenlet decided to go to sleep. Boom, application deadlocked, as library never expected that function won't return value.
+Code that uses greenlets also does not like threads. Imagine that function acquired *RLock* and called another function, which decided that it should sleep waiting for IO. As a result, whole application deadlocked due to implicit context switch to different greenlet. And just by reading code, it is hard to figure out why that happened.
 
 Callbacks
 ---------
@@ -415,6 +415,11 @@ Full example is [here](https://gist.github.com/mrjoes/3284402).
 
 Brokers are stateless - they don't really store any application-specific state, so you can start as many of them as you want to keep up with increased load, as long as balancer is properly configured.
 
+<a href="/shared/posts/python-realtime/push-servers.png">
+  <img src="/shared/posts/python-realtime/push-servers.png" alt="Diagram"></img>
+</a>
+
+
 Games
 -----
 
@@ -482,25 +487,31 @@ class GameConnection(SockJSConnection):
         self.send(json.dumps({'msg': 'error', 'text': text}))
 {% endhighlight %}
 
-Rooms can be stored in a dictionary, there key is room ID and value is room object.
+Rooms can be stored in a dictionary, where key is room ID and value is room object.
 
 By implementing different message handlers and appropriate logic on client-side, we can have our game working, which is left as an exercise to the reader.
 
-Games are stateful - server has to keep track of what's happening in the game. This also means that it is somewhat harder to scale it.
+Games are stateful - server has to keep track of what's happening in the game. This also means that it is somewhat harder to scale them.
 
-In example above, one server will handle all games for all connected players. But what if we need to start two servers? As they don't know about each one state, players connected to first server won't be able to play with players from second server. While it might work in some cases, especially when there's region based player distribution, it is not acceptable in most of the cases.
+In example above, one server will handle all games for all connected players. But what if we have to start two servers? As they don't know about each one state, players connected to first server won't be able to play with players on the second server.
 
-Depending on game rule complexity, it is possible to use fully connected topology - every server is connected to every other other server. Unfortunately, it is not very efficient either.
+Depending on game rule complexity, it is possible to use fully connected topology - every server is connected to every other server:
 
-To solve this problem, you can abstract game logic and related state into separate server application and treat realtime portion as a smart adapter between game server and the client.
+<a href="/shared/posts/python-realtime/game-interconnect.png">
+  <img src="/shared/posts/python-realtime/game-interconnect.png" alt="Diagram"></img>
+</a>
 
-So, it looks like this (yes, I know, it looks ugly, but better than nothing):
+In this case, game state should have minimum required information to identify client, manage his game-related state and send game-related messages to appropriate server(s), so they can forward them to the browser.
+
+While this approach works, but as asynchronous application is single-threaded, it is better to split game logic and related state into separate server application and treat realtime portion as a smart adapter between game server and the client.
+
+So, it can work like this (yes, I know, it looks a bit ugly):
 
 <a href="/shared/posts/python-realtime/realtime-game-servers.png">
   <img src="/shared/posts/python-realtime/realtime-game-servers.png" alt="Diagram"></img>
 </a>
 
-Client connects to one of realtime servers, authenticates himself, gets list of running games (through some shared state between game and realtime servers). When client wants to play in particular game, it sends request to realtime server, which then talks to game server.
+Client connects to one of realtime servers, authenticates himself, gets list of running games (through some shared state between game and realtime servers). When client wants to play in particular game, it sends request to realtime server, which then talks to game server. While this looks very similar to full-interconnected solution, realtime servers are not interconnected and independent of each other and game servers don't need to connect, as they don't care about each others states. Scaling is simple as well - add more realtime server or game servers, as their state is isolated and becomes manageable.
 
 Also, for this task, I'll use ZeroMQ (or AMQP bus) instead of Redis, because Redis becomes single point of failure.
 
@@ -574,3 +585,5 @@ In most of the cases, software development is trade-off between development cost
 I hope this post will help you to get started with realtime Web using Python language.
 
 Anyway, if you have any comments, questions or updates - feel free to contact me.
+
+P.S. Diagrams were done with help of [draw.io](http://draw.io/) - I think I should mention this excellent and free service.
