@@ -36,7 +36,7 @@ In September 2006, Opera Software implemented experimental [Server-Sent Events](
 SSE was approved by WHATWG on April 23, 2009 and supported by almost all modern desktop browsers (except of Internet Explorer).
 You can see compatibility [chart here](http://caniuse.com/#feat=eventsource).
 
-There are other techniques as well, like [forever-iframe](http://cometdaily.com/2007/11/05/the-forever-frame-technique/) which is only way to do cross-domain push for Internet Explorer versions less than 8, [HTMLFile](http://cometdaily.com/2007/10/25/http-streaming-and-internet-explorer/), etc.
+There are other techniques as well, like [forever-iframe](http://cometdaily.com/2007/11/05/the-forever-frame-technique/) which is one of two possible ways to do cross-domain push for Internet Explorer versions less than 8 (another one is [jsonp](http://en.wikipedia.org/wiki/JSONP)-polling)s, [HTMLFile](http://cometdaily.com/2007/10/25/http-streaming-and-internet-explorer/), etc.
 
 As a whole, all these HTTP-based fallbacks go under [Comet](http://en.wikipedia.org/wiki/Comet_(programming) name.
 
