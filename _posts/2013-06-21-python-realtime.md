@@ -587,7 +587,7 @@ Anyway, I don't see reason to drop Python in favor of nodejs for the realtime po
 Final notes
 -----------
 
-While one might argue that Python is not best language to write scalable servers with. Sure, [Erlang](http://www.erlang.org/) has built-in tools to write efficient and scalable applications (and there's [sockjs-erlang](https://github.com/sockjs/sockjs-erlang) too), but it is so much harder to find Erlang developers. [Clojure](http://clojure.org/) and [Scala](http://www.scala-lang.org/) are other great candidates, but Java is completely different world with own libraries, methodologies and conventions. And it is still harder to find decent Clojure developer than to find good Python guy. [Go](http://golang.org/) is great, but quite young language without significant adoption.
+While one might argue that Python is not best language to write scalable servers with. Sure, [Erlang](http://www.erlang.org/) has built-in tools to write efficient and scalable applications (and there's [sockjs-erlang](https://github.com/sockjs/sockjs-erlang) too), but it is so much harder to find Erlang developers. [Clojure](http://clojure.org/) and [Scala](http://www.scala-lang.org/) are other great candidates, but Java is completely different world with own libraries, methodologies and conventions. And it is still harder to find decent Clojure developer than to find good Python guy. [Go](http://golang.org/) is great, but is quite young language without significant adoption.
 
 If you already have Python experience, you can achieve decent results by continuing using Python. In most of the cases, software development is trade-off between development costs and performance. I think that Python is in good position, especially with help of [PyPy](http://www.pypy.org/).
 
