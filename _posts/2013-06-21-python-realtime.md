@@ -389,8 +389,7 @@ Push broker
 -----------
 
 Broker accepts messages from Flask application and forwards them to connected clients. There are lots of ready-to-use
-broker services ([PubNub](http://www.pubnub.com/), [Pusher](http://pusher.com/), etc), but for some reasons you
-might want to roll out your own.
+broker services ([PubNub](http://www.pubnub.com/), [Pusher](http://pusher.com/) or self-hosted solutions like [Hookbox](https://hookbox.readthedocs.org/en/latest/intro.html)), but for some reasons you might want to roll out your own.
 
 Here's dead simple push broker:
 {% highlight python %}
