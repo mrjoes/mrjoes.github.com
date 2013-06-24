@@ -539,7 +539,7 @@ There are three deployment options:
          2. No need to worry about cross-domain scripting policies
          3. Usually works in environments with restrictive firewall
      - Disadvantages
-         1. Not compatible with some corporate transparent HTTP proxies
+         1. Not compatible with some transparent HTTP proxies
  2. Serve Web server on port 80 and realtime portion on different port
      - Advantages
          1. More compatible with transparent proxies
