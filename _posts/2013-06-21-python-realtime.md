@@ -167,11 +167,11 @@ Why is greenlets are great? Because they allow writing asynchronous code in sync
 
 On other hand, greenlet implementation for CPython is quite scary.
 
-Each coroutine has its own stack. CPython uses unmanaged stack for Python applications and when Python program runs, stack looks like lasagna - interpreter data mixed with native extension data, mixed with Python application data and everything is layered in random order. It is quite hard to preserve stack trace in such case and do painless context switching between coroutines, as it is hard to predict what is on the stack.
+Each coroutine has its own stack. CPython uses unmanaged stack for Python applications and when Python program runs, stack looks like lasagna - interpreter data mixed with native modules data, mixed with Python application data and everything is layered in random order. It is quite hard to preserve stack trace in such case and do painless context switching between coroutines, as it is hard to predict what is on the stack.
 
 Greenlet attempts to overcome the limitation by copying part of the stack to the heap and back. While it works for most of the cases, but any untested 3rd party library with native extension might create bizarre bugs like stack or heap corruption.
 
-Code that uses greenlets also does not like threads. It is somewhat easier to create deadlock when code is not expecting that function that was just called paused greenlet and caller didn't have chance to release lock.
+Code that uses greenlets also does not like threads. It is somewhat easier to create deadlock when code is not expecting that function that was just called pauses greenlet and caller didn't have chance to release the lock.
 
 Callbacks
 ---------
@@ -181,7 +181,7 @@ Another way to do context switching is to use callbacks. Long-polling example:
  1. Client opens HTTP connection to the server to get more data
  2. Server sees that there's no data to send
  3. Server waits for data and passes callback function that should be called when there's data available
- 4. Server sends response from the callback function
+ 4. Server sends response from the callback function and closes connection
 
 In pseudo-code:
 {% highlight python %}
@@ -260,17 +260,18 @@ I prefer explicit context switching and little bit cautious of greenlets after s
 Asynchronous Frameworks
 =======================
 
-In most of the cases, there's no need to write own asynchronous network layer and better to use existing framework. I won't list all asynchronous frameworks here, only ones I worked with, so no offense.
+In most of the cases, there's no need to write own asynchronous network layer and better to use existing framework. I won't list all Python asynchronous frameworks here, only ones I worked with, so no offense.
 
 [Gevent](http://www.gevent.org/) is nice, makes writing asynchronous easy, but I had problems with greenlets as mentioned above.
 
-[Twisted](http://twistedmatrix.com/trac/) is oldest asynchronous framework and is actively maintained up to date. My personal feelings about it are quite mixed: complex, non PEP8, hard to learn.
+[Twisted](http://twistedmatrix.com/trac/) is oldest asynchronous framework and is actively maintained even now. My personal feelings about it are quite mixed: complex, non PEP8, hard to learn.
 
 [Tornado](http://tornadoweb.org) is the framework I stopped on. There are few reasons why:
 
  - Fast
  - Predictable
  - Pythonic
+ - Relatively small
  - Actively developed
  - Source code is easy to read and understand
 
