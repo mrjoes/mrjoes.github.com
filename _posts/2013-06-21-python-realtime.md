@@ -560,7 +560,7 @@ I saw few success stories with sockjs-tornado: [PlayBuildy](http://blog.playbuil
 
 But, unfortunately, I didn't use it myself for large projects.
 
-However, I have quite interesting experience with [sockjs-node](https://github.com/sockjs/sockjs-node) - SockJS server implementation for [nodejs](http://nodejs.org/). I implemented realtime portion for existing website for a relatively large radio station. At average, there are around 3,500 connected clients at the same time.
+However, I have quite interesting experience with [sockjs-node](https://github.com/sockjs/sockjs-node) - SockJS server implementation for [nodejs](http://nodejs.org/). I implemented realtime portion for a relatively large radio station. At average, there are around 3,500 connected clients at the same time.
 
 Most connections are short-lived and server is more than just a simple broker: it manages hierarchical subscription channels (for example radiostation-event-tweet or radiostation-artist-news-tweet) and a channel backlog. Client can subscribe to the channel and should receive all updates pushed to any of the child channels as well. Client can also request backlog - last N messages sorted by date for channel and its children. So there was a bit of logic on the server.
 
