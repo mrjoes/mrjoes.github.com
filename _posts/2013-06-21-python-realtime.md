@@ -526,6 +526,8 @@ Also, for this task, I'd use ZeroMQ (or AMQP bus) instead of Redis, because Redi
 
 Game servers are not exposed to the Internet and they can be only accessed by the realtime servers.
 
+I'd say that scaling is all about efficient state management in your distributed application.
+
 Deployment
 ----------
 
