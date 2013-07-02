@@ -584,7 +584,9 @@ To sum it up - even though nodejs does its job, I had strong feeling that it is 
 
 Performance-wise, with WebSocket transport, CPython is [on par](http://mrjoes.github.io/2011/12/15/sockjs-bench.html) with nodejs and PyPy is much faster than both. For long-polling, Tornado on PyPy is approximately 1.5-2 times slower than nodejs when used with proper asynchronous libraries. So, given current WebSocket adoption state, I'd say they're comparable.
 
-Anyway, I don't see reason to drop Python in favor of nodejs for the realtime portion.
+I don't see reason to drop Python in favor of nodejs for the realtime portion.
+
+Update (02.07.2013): [TechEmpower](http://www.techempower.com/) released their [round 6](http://www.techempower.com/benchmarks/#section=data-r6&hw=ec2&test=json) of framework benchmarks and new Tornado is faster or comparable to node.js.
 
 Final notes
 -----------
