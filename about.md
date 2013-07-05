@@ -14,6 +14,20 @@ Programmer. Passionate about Python. Have experience with .NET platform, C, C++,
 
 Fluent in Web-related technologies and can work as a full-stack developer.
 
+Maintainer of few Open Source projects (Flask-Admin, sockjs-tornado and some others), which you can find on my GitHub page.
+
+Status
+------
+
+Currently I'm looking for remote full-time Python-related job for up to 6 months.
+
+How I can help you:
+
+ * Can work as a full-stack developer (from database design to rich client-side applications)
+ * Performance optimizations, architecture clean up, figuring out complex bugs, etc
+ * Real-time (Comet/push) functionality for the website/application
+ * And more
+
 How to reach me
 ---------------
 
