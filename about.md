@@ -19,7 +19,7 @@ Maintainer of few Open Source projects (Flask-Admin, sockjs-tornado and some oth
 Status
 ------
 
-Currently I'm looking for remote full-time Python-related job for up to 6 months.
+Currently I'm looking for remote full-time/contractor Python-related job for up to 6 months.
 
 How I can help you:
 
