@@ -10,7 +10,9 @@ My name is Serge Koval. Live in Kiev, Ukraine.
 Profession?
 -----------
 
-Programmer. Passionate about Python. Have experience with .NET platform (C# mostly), C, C++, a bit of gamedev and x86 assembly language.
+Programmer. Passionate about Python. Have experience with .NET platform, C, C++, a bit of gamedev and x86 assembly language.
+
+Fluent in Web-related technologies and can work as a full-stack developer.
 
 How to reach me
 ---------------
