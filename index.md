@@ -2,7 +2,7 @@
 layout: default
 ---
 <ul class="posts">
-{% for p in site.posts limit 5 %}
+	{% for p in site.posts limit 5 %}
 	<li>
 		<div class="date">
 			{{ p.date | date:"%b %d, %Y"}}
@@ -16,5 +16,5 @@ layout: default
 		</div>
 		{% endif %}
 	</li>
-{% endfor %}
+	{% endfor %}
 </ul>
