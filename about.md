@@ -5,7 +5,7 @@ layout: default
 Who am I?
 ---------
 
-My name is Serge Koval. Originally from Ukraine, but right now live in Atlanta, Georgia.
+My name is Serge Koval. Originally from Ukraine, but currently live in Atlanta, Georgia.
 
 Profession?
 -----------
