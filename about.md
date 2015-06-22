@@ -5,7 +5,7 @@ layout: default
 Who am I?
 ---------
 
-My name is Serge Koval. Live in Kiev, Ukraine.
+My name is Serge Koval. Originally from Ukraine, but right now live in Atlanta, Georgia.
 
 Profession?
 -----------
@@ -24,4 +24,3 @@ Jabber and Email: serge.koval at gmail.com
 GitHub: [http://github.com/mrjoes/](http://github.com/mrjoes/)
 
 LinkedIn: [http://www.linkedin.com/in/joecarpenter/](http://www.linkedin.com/in/joecarpenter/)
-
